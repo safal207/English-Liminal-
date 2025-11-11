@@ -41,7 +41,7 @@ impl Default for Difficulty {
 /// - Bonus: use-in-wild mentions (+10% each, max +50%)
 /// - Penalty: skipped steps (-5% each)
 /// - Range: 0.0 - 1.0
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RoleCoherenceScore {
     pub role_id: String,
     pub completed_scenarios: u32,

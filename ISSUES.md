@@ -48,18 +48,25 @@
 Настроить FFI-связь между Rust core и Flutter app.
 
 **Детали реализации:**
-- [ ] Установить `flutter_rust_bridge_codegen`:
+- [x] Установить `flutter_rust_bridge_codegen`:
   ```bash
   cargo install flutter_rust_bridge_codegen
   ```
-- [ ] Добавить `flutter_rust_bridge = "2"` в `core/Cargo.toml`
-- [ ] Создать `core/src/api.rs` с FFI функциями (уже готово)
+- [x] Добавить `flutter_rust_bridge = "2"` в `core/Cargo.toml`
+- [x] Создать `core/src/api.rs` с FFI функциями
+  - [x] Script management (load_scripts_from_dir, get_script_ids, get_script_json)
+  - [x] Runner functions (start_runner, runner_next, runner_prev, runner_progress, runner_current_step)
+  - [x] Storage functions (init_storage, add_event, get_events, export_data)
+  - [x] Statistics (get_streak, get_use_in_wild_count)
+  - [x] Role management (load_roles_from_dir, get_role_ids, get_role_json, calculate_role_coherence)
+  - [x] Health check
 - [ ] Сгенерировать Dart биндинги:
+  **⚠️ NOTE:** Требуется установить Flutter SDK для генерации биндингов
   ```bash
-  flutter_rust_bridge_codegen \
-    --rust-input core/src/api.rs \
-    --dart-output app/lib/bridge/bridge.generated.dart \
-    --dart-decl-output app/lib/bridge/bridge_definitions.dart
+  flutter_rust_bridge_codegen generate \
+    --rust-input crate::api \
+    --dart-output app/lib/bridge \
+    --rust-root core
   ```
 - [ ] Собрать Rust библиотеку для Android:
   ```bash
@@ -544,7 +551,7 @@
 Экспортировать role функции для Flutter через flutter_rust_bridge.
 
 **Детали реализации:**
-- [ ] В `api.rs` добавить:
+- [x] В `api.rs` добавить:
   ```rust
   #[frb(sync)]
   pub fn load_roles_from_dir(dir: String) -> Result<u32, String>;
@@ -558,16 +565,16 @@
   #[frb(sync)]
   pub fn calculate_role_coherence(
     role_id: String,
-    completed: u32,
-    wild: u32,
-    skipped: u32,
-  ) -> Result<f32, String>;
+    completed_scenarios: u32,
+    use_in_wild_count: u32,
+    skipped_steps: u32,
+  ) -> Result<String, String>; // Returns RoleCoherenceScore JSON
   ```
 
 **Acceptance:**
-- [ ] Функции экспортируются в Dart
-- [ ] Вызов из Flutter возвращает корректные данные
-- [ ] Генерация биндингов без ошибок
+- [x] Функции реализованы в `core/src/api.rs`
+- [ ] Вызов из Flutter возвращает корректные данные (requires Dart bindings generation)
+- [ ] Генерация биндингов без ошибок (requires Flutter SDK installation)
 
 ---
 

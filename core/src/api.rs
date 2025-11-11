@@ -6,12 +6,14 @@ use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
 
+use crate::roles::{Role, RoleCoherenceScore};
 use crate::runner::RunnerState;
 use crate::scripts::Script;
 use crate::storage::Store;
 
 // Global state
 static SCRIPTS: Lazy<Mutex<HashMap<String, Script>>> = Lazy::new(|| Mutex::new(HashMap::new()));
+static ROLES: Lazy<Mutex<HashMap<String, Role>>> = Lazy::new(|| Mutex::new(HashMap::new()));
 static STORE: Lazy<Mutex<Option<Store>>> = Lazy::new(|| Mutex::new(None));
 
 // ============================================================================
@@ -165,6 +167,74 @@ pub fn get_use_in_wild_count() -> Result<u32, String> {
     let guard = STORE.lock();
     let store = guard.as_ref().ok_or_else(|| "Storage not initialized".to_string())?;
     store.get_use_in_wild_count().map_err(|e| e.to_string())
+}
+
+// ============================================================================
+// Role Management
+// ============================================================================
+
+#[frb(sync)]
+pub fn load_roles_from_dir(dir: String) -> Result<u32, String> {
+    let mut map = ROLES.lock();
+    map.clear();
+
+    let path = PathBuf::from(&dir);
+    if !path.exists() {
+        return Err(format!("Directory not found: {}", dir));
+    }
+
+    for entry in fs::read_dir(path).map_err(|e| e.to_string())? {
+        let entry = entry.map_err(|e| e.to_string())?;
+        let path = entry.path();
+
+        if path.extension().and_then(|s| s.to_str()) == Some("yaml") {
+            let txt = fs::read_to_string(&path).map_err(|e| e.to_string())?;
+            let role: Role = serde_yaml::from_str(&txt).map_err(|e| e.to_string())?;
+            map.insert(role.id.clone(), role);
+        }
+    }
+
+    Ok(map.len() as u32)
+}
+
+#[frb(sync)]
+pub fn get_role_ids() -> Vec<String> {
+    ROLES.lock().keys().cloned().collect()
+}
+
+#[frb(sync)]
+pub fn get_role_json(role_id: String) -> Result<String, String> {
+    let map = ROLES.lock();
+    let role = map
+        .get(&role_id)
+        .ok_or_else(|| format!("Role not found: {}", role_id))?;
+    serde_json::to_string(role).map_err(|e| e.to_string())
+}
+
+#[frb(sync)]
+pub fn calculate_role_coherence(
+    role_id: String,
+    completed_scenarios: u32,
+    use_in_wild_count: u32,
+    skipped_steps: u32,
+) -> Result<String, String> {
+    let map = ROLES.lock();
+    let role = map
+        .get(&role_id)
+        .ok_or_else(|| format!("Role not found: {}", role_id))?;
+
+    let total_scenarios = role.scenario_ids.len() as u32;
+    let mut coherence = RoleCoherenceScore {
+        role_id: role_id.clone(),
+        completed_scenarios,
+        total_scenarios,
+        use_in_wild_count,
+        skipped_steps,
+        score: 0.0,
+    };
+
+    coherence.calculate();
+    serde_json::to_string(&coherence).map_err(|e| e.to_string())
 }
 
 // ============================================================================
