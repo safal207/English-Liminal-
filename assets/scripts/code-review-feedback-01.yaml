@@ -1,0 +1,39 @@
+id: code-review-feedback-01
+title: "Code Review: Constructive Feedback"
+description: "Give helpful, professional feedback on code reviews"
+context_triggers:
+  time: any
+  location: work
+  duration_max_sec: 180
+goals:
+  - "Be constructive, not critical"
+  - "Use polite, professional language"
+  - "Focus on the code, not the person"
+steps:
+  - type: listen
+    prompt: "Listen to professional code review feedback:"
+    content: "This approach works, but we could improve readability by extracting this logic into a separate function. What do you think?"
+
+  - type: speak_check
+    prompt: "Give feedback on a long function:"
+    content: "This function looks good overall. I'd suggest breaking it into smaller functions for better testability. Would you like me to show an example?"
+    ref_text: "This function looks good overall I'd suggest breaking it into smaller functions for better testability would you like me to show an example"
+    hints:
+      - "Start positive: 'looks good', 'works well'"
+      - "Suggest, don't demand: 'I'd suggest', 'consider'"
+      - "Offer help: 'Would you like...?'"
+
+  - type: contrast
+    prompt: "Which feedback is most professional?"
+    answers:
+      - "This code is terrible. Rewrite it."
+      - "This approach works, but we could improve readability by extracting this logic. What do you think?"
+      - "I don't like this."
+
+  - type: apply_to_life
+    prompt: "Give feedback on an imaginary pull request"
+
+rehearsal:
+  decay_alpha: 0.82
+  next_ping_sec_min: 180
+  next_ping_sec_max: 21600

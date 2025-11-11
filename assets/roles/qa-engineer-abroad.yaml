@@ -1,0 +1,68 @@
+id: qa-engineer-abroad
+title: "QA Engineer Abroad"
+description: |
+  Master the professional English needed to work as a QA Engineer in an international team.
+  From interviewing to daily collaboration, bug reporting to release planning.
+goal: "Pass interviews and work confidently in English-speaking tech teams"
+icon: "🧪"
+difficulty: intermediate
+
+benchmarks:
+  - "Interview: Explain testing approach"
+  - "Daily Standup: Give clear status updates"
+  - "Bug Report: Write precise reproduction steps"
+  - "Code Review: Provide constructive feedback"
+  - "Release Planning: Discuss risks and timelines"
+
+scenario_ids:
+  - standup-update-01
+  - qa-interview-technical-01
+  - bug-report-writing-01
+  - code-review-feedback-01
+  - release-planning-discussion-01
+
+# Progression stages
+stages:
+  - stage: 1
+    title: "Interview Ready"
+    scenarios:
+      - qa-interview-technical-01
+    goal: "Confidently explain your testing philosophy"
+
+  - stage: 2
+    title: "Daily Collaboration"
+    scenarios:
+      - standup-update-01
+      - code-review-feedback-01
+    goal: "Communicate effectively in daily workflows"
+
+  - stage: 3
+    title: "Technical Writing"
+    scenarios:
+      - bug-report-writing-01
+    goal: "Write clear, actionable bug reports"
+
+  - stage: 4
+    title: "Strategic Thinking"
+    scenarios:
+      - release-planning-discussion-01
+    goal: "Contribute to high-level planning discussions"
+
+# Key phrases for this role
+key_phrases:
+  - "I've identified a regression in..."
+  - "The reproduction steps are..."
+  - "This test case covers..."
+  - "We should prioritize..."
+  - "The risk here is..."
+  - "I'll need to verify..."
+  - "Let me walk through the scenario..."
+
+# Common situations
+situations:
+  - Daily stand-up meetings
+  - Bug triage sessions
+  - Code review discussions
+  - Sprint planning
+  - Post-mortem analysis
+  - Customer issue escalation
