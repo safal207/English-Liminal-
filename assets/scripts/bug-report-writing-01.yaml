@@ -1,0 +1,38 @@
+id: bug-report-writing-01
+title: "Writing Clear Bug Reports"
+description: "Practice writing precise, actionable bug reports"
+context_triggers:
+  time: any
+  location: work
+  duration_max_sec: 240
+goals:
+  - "Use clear, structured language"
+  - "Include all necessary information"
+  - "Make it easy for developers to reproduce"
+steps:
+  - type: listen
+    prompt: "Listen to a well-structured bug report:"
+    content: "Title: Login button unresponsive on mobile. Steps to reproduce: 1. Open app on iOS 2. Tap login button 3. Nothing happens. Expected: Login screen appears. Actual: Button doesn't respond. Severity: High."
+
+  - type: speak_check
+    prompt: "Report this bug: User can't save their profile changes"
+    content: "Title: Profile save button fails. Steps: 1. Edit profile name 2. Click save 3. Changes don't persist. Expected: Changes saved. Actual: Reverts to old name. Severity: Medium."
+    ref_text: "Title profile save button fails steps edit profile name click save changes don't persist expected changes saved actual reverts to old name severity medium"
+    hints:
+      - "Structure: Title → Steps → Expected → Actual → Severity"
+      - "Be specific: exact steps, clear outcomes"
+
+  - type: contrast
+    prompt: "Which bug report is better?"
+    answers:
+      - "Login doesn't work. Fix it."
+      - "Title: Login fails on mobile. Steps: 1. Open app 2. Tap login. Expected: Success. Actual: Error 'Invalid credentials'. Severity: High."
+      - "The app is broken and nobody can login."
+
+  - type: apply_to_life
+    prompt: "Write a real bug report from your work (or make one up)"
+
+rehearsal:
+  decay_alpha: 0.85
+  next_ping_sec_min: 240
+  next_ping_sec_max: 43200
