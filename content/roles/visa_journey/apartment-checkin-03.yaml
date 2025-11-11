@@ -1,0 +1,58 @@
+id: apartment_checkin_03
+role_id: visa_journey
+title: "Apartment Check-in: First Home Abroad"
+difficulty: intermediate
+emotion_wave: curious_cautious
+description: "Check into your new apartment. Ask questions about utilities, rules, and emergency contacts."
+
+goals:
+  - "Asking practical questions"
+  - "Understanding rental terms"
+  - "Assertive but polite communication"
+
+context: |
+  You're meeting the landlord or property manager to get keys and sign the lease.
+  This is your first apartment abroad. Ask about everything you need to know:
+  utilities, Wi-Fi, garbage, laundry, emergency contacts, rules.
+
+steps:
+  - type: listen
+    prompt: "Welcome! Here are your keys. The lease starts today. Do you have any questions about the apartment?"
+    audio_hint: "Friendly, slightly rushed tone"
+
+  - type: speak_check
+    prompt: "Ask about utilities and setup"
+    ref_text: "Yes, thank you. Are utilities included in the rent, or do I need to set them up separately? And how do I get the Wi-Fi password?"
+    difficulty: intermediate
+    emotion_tag: practical_polite
+
+  - type: listen
+    prompt: "Water and garbage are included, but you'll need to set up electricity and internet on your own. The Wi-Fi info is on the fridge. Anything else?"
+
+  - type: speak_check
+    prompt: "Ask about building rules and laundry"
+    ref_text: "Got it. Is there a laundry room in the building? And are there any quiet hours or rules I should know about?"
+    difficulty: intermediate
+    emotion_tag: curious_respectful
+
+  - type: listen
+    prompt: "Laundry is in the basement, it's coin-operated. Quiet hours are 10 PM to 8 AM. Here's my number if you have any issues."
+
+  - type: speak_check
+    prompt: "Confirm emergency contacts"
+    ref_text: "Perfect, thank you. And just to confirm—if there's an emergency like a leak or broken heating, do I call you directly or is there a building maintenance number?"
+    difficulty: intermediate
+    emotion_tag: assertive_prepared
+
+  - type: apply_to_life
+    prompt: "Теперь представь, что ты заселяешься в реальную квартиру. Какие вопросы ты бы задал арендодателю?"
+    hint: "Не стесняйся спрашивать всё, что важно для комфортной жизни"
+
+rehearsal:
+  decay_alpha: 0.85
+  next_ping_sec_min: 240
+  next_ping_sec_max: 4800
+  success_threshold: 0.78
+
+coherence_weight: 0.22
+transition_message: "You have a home now. Not just an address—a place that's yours."

@@ -1,0 +1,29 @@
+id: family_abroad
+title: "Family Abroad"
+description: "Raise a family in a foreign country. Navigate parent-teacher conversations, build community with other parents, and create a sense of home for your children in a new place."
+
+difficulty: intermediate
+estimated_duration_weeks: 1
+
+scenes:
+  - pick-up-kid-kindergarten-01.yaml
+  - neighbours-chat-02.yaml
+
+total_coherence_target: 0.75
+
+themes:
+  - "Parental communication"
+  - "Community building"
+  - "Warm, empathetic English"
+  - "Supporting child development abroad"
+
+target_audience:
+  - "Parents relocating with children"
+  - "Expat families"
+  - "Caregivers in international settings"
+
+emotional_arc: |
+  Moving abroad with family is one of the most challenging transitions.
+  These scenes help you show up as a present, caring parent who can
+  communicate with teachers and build a support network. By the end,
+  you realize: you're not just living abroad. You're building home.

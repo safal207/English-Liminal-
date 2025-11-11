@@ -1,0 +1,58 @@
+id: pick_up_kid_kindergarten_01
+role_id: family_abroad
+title: "Kindergarten Pickup: Teacher Check-in"
+difficulty: intermediate
+emotion_wave: warm_attentive
+description: "Pick up your child from kindergarten and talk to the teacher about their day. Show parental interest and ask follow-up questions."
+
+goals:
+  - "Warm, parental communication"
+  - "Asking about child's development"
+  - "Building relationship with teachers"
+
+context: |
+  You're picking up your child from kindergarten. The teacher wants to briefly update you
+  on how your child is doing—socially, academically, and behaviorally. Listen actively,
+  ask questions, and show you care.
+
+steps:
+  - type: listen
+    prompt: "Oh hi! I wanted to catch you quickly. Your little one had a great day today. They really participated in the art project."
+    audio_hint: "Warm teacher tone, enthusiastic"
+
+  - type: speak_check
+    prompt: "Show interest and ask follow-up"
+    ref_text: "That's wonderful to hear! They were so excited about the art project this morning. Did they work well with the other kids?"
+    difficulty: intermediate
+    emotion_tag: warm_engaged
+
+  - type: listen
+    prompt: "Yes, actually! They're becoming more comfortable playing with others. I did notice they were a bit shy during circle time, but that's totally normal for their age."
+
+  - type: speak_check
+    prompt: "Acknowledge and ask for guidance"
+    ref_text: "I've noticed that at home too. Is there anything I can do to help encourage them to speak up more in group settings?"
+    difficulty: intermediate
+    emotion_tag: attentive_concerned
+
+  - type: listen
+    prompt: "Just keep encouraging them at home. Reading together and asking them to share their thoughts helps a lot. They're doing great, honestly."
+
+  - type: speak_check
+    prompt: "Express gratitude"
+    ref_text: "Thank you so much for letting me know. I really appreciate you keeping an eye on them. We'll keep working on that at home."
+    difficulty: intermediate
+    emotion_tag: grateful_warm
+
+  - type: apply_to_life
+    prompt: "Теперь представь реальный разговор с воспитателем о своём ребёнке. Что бы ты спросил?"
+    hint: "Покажи, что тебе небезразлично развитие ребёнка"
+
+rehearsal:
+  decay_alpha: 0.85
+  next_ping_sec_min: 240
+  next_ping_sec_max: 4800
+  success_threshold: 0.78
+
+coherence_weight: 0.23
+transition_message: "You're not just living abroad—you're raising your family here. That takes courage."

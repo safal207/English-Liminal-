@@ -1,0 +1,52 @@
+id: qa_standup_03
+role_id: qa_engineer_abroad
+title: "Daily Standup: Quick Update"
+difficulty: beginner
+emotion_wave: energetic_brief
+description: "Give a concise, clear update at the morning standup. Keep it short, relevant, and confident."
+
+goals:
+  - "Concise communication"
+  - "Natural flow in group meetings"
+  - "Confidence in public speaking"
+
+context: |
+  It's 9 AM standup. The team is gathered (remotely or in person).
+  You have 1-2 minutes to share your update: what you did yesterday,
+  what you're doing today, and any blockers.
+
+steps:
+  - type: listen
+    prompt: "Good morning everyone! Let's do a quick round. Sarah, you want to start?"
+    audio_hint: "Friendly, energetic morning tone"
+
+  - type: listen
+    prompt: "Great, thanks Sarah. Alright, your turn next!"
+
+  - type: speak_check
+    prompt: "Give your standup update"
+    ref_text: "Yesterday I finished testing the payment flow and found two minor UI issues. Today I'm moving on to the new dashboard features. No blockers at the moment."
+    difficulty: beginner
+    emotion_tag: confident_brief
+
+  - type: listen
+    prompt: "Perfect, thanks! Do those UI issues need immediate attention?"
+
+  - type: speak_check
+    prompt: "Clarify the priority"
+    ref_text: "They're low priority—just cosmetic alignment issues. I've already logged them and they can be handled in the next sprint."
+    difficulty: beginner
+    emotion_tag: clear
+
+  - type: apply_to_life
+    prompt: "Теперь расскажи о своём реальном вчерашнем дне работы. Что ты сделал? Что планируешь сегодня?"
+    hint: "Говори кратко и по делу, как на настоящем стендапе"
+
+rehearsal:
+  decay_alpha: 0.80
+  next_ping_sec_min: 120
+  next_ping_sec_max: 2400
+  success_threshold: 0.70
+
+coherence_weight: 0.18
+transition_message: "Daily standups feel natural now. You're part of the rhythm."

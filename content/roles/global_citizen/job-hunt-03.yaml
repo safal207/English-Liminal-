@@ -1,0 +1,58 @@
+id: job_hunt_03
+role_id: global_citizen
+title: "Recruiter Call: First Conversation"
+difficulty: intermediate
+emotion_wave: professional_enthusiastic
+description: "Initial phone screening with a recruiter. Show interest, ask smart questions, sound professional."
+
+goals:
+  - "Professional phone presence"
+  - "Asking insightful questions"
+  - "Showing genuine interest"
+
+context: |
+  A recruiter from a company you applied to is calling you for an initial screening.
+  They want to know about your background and see if you're a good fit.
+  Be professional but show personality.
+
+steps:
+  - type: listen
+    prompt: "Hi! This is Sarah from TechCorp. I'm calling about the QA Engineer position you applied for. Is now a good time to talk for about 15 minutes?"
+    audio_hint: "Professional, friendly recruiter tone"
+
+  - type: speak_check
+    prompt: "Confirm availability professionally"
+    ref_text: "Hi Sarah! Yes, absolutely. Thanks for reaching out. I'm really interested in the position."
+    difficulty: intermediate
+    emotion_tag: professional_enthusiastic
+
+  - type: listen
+    prompt: "Great! Can you start by telling me a bit about your current role and what you're looking for in your next opportunity?"
+
+  - type: speak_check
+    prompt: "Briefly describe your background and goals"
+    ref_text: "Sure. I'm currently working as a QA Engineer at a fintech startup, focusing on test automation and API testing. I'm looking for an opportunity to work on larger-scale systems and collaborate with a more diverse team. I saw that TechCorp works on cloud infrastructure, which really excites me."
+    difficulty: intermediate
+    emotion_tag: confident_clear
+
+  - type: listen
+    prompt: "That sounds like a great fit! This role would involve a lot of automation and working closely with our DevOps team. What's your experience with CI/CD pipelines?"
+
+  - type: speak_check
+    prompt: "Answer technical question and ask follow-up"
+    ref_text: "I've set up CI/CD pipelines using Jenkins and GitHub Actions for automated testing. I'm comfortable with Docker and integrating tests into deployment workflows. Could you tell me more about the team structure? How big is the QA team?"
+    difficulty: intermediate
+    emotion_tag: engaged_curious
+
+  - type: apply_to_life
+    prompt: "Теперь расскажи о своей реальной работе и задай вопрос рекрутеру о команде или проекте."
+    hint: "Покажи интерес, но не теряй профессионализма"
+
+rehearsal:
+  decay_alpha: 0.86
+  next_ping_sec_min: 240
+  next_ping_sec_max: 5400
+  success_threshold: 0.80
+
+coherence_weight: 0.25
+transition_message: "You're not just looking for a job—you're building a career across borders. Well done."

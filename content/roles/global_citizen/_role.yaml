@@ -1,0 +1,30 @@
+id: global_citizen
+title: "Global Citizen"
+description: "Build the practical skills of a world traveler and international professional. From airport small talk to SIM card negotiations to recruiter calls—master the logistics of global life."
+
+difficulty: beginner
+estimated_duration_weeks: 2
+
+scenes:
+  - airport-lounge-01.yaml
+  - sim-card-02.yaml
+  - job-hunt-03.yaml
+
+total_coherence_target: 0.78
+
+themes:
+  - "Travel English"
+  - "Service interactions"
+  - "Professional networking"
+  - "Practical decision-making"
+
+target_audience:
+  - "Digital nomads"
+  - "Frequent travelers"
+  - "Job seekers going international"
+  - "Students studying abroad"
+
+emotional_arc: |
+  You begin as a visitor—ordering coffee, figuring out logistics.
+  But with each interaction, you shed the tourist mindset.
+  By the end, you're not just passing through. You're connected.

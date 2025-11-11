@@ -1,0 +1,32 @@
+id: qa_engineer_abroad
+title: "QA Engineer Abroad"
+description: "Navigate the professional world as a Quality Assurance engineer in a foreign tech company. Master technical communication, team collaboration, and cross-cultural workplace dynamics."
+
+difficulty: intermediate
+estimated_duration_weeks: 3
+
+scenes:
+  - qa-interview-01.yaml
+  - qa-bugreport-02.yaml
+  - qa-standup-03.yaml
+  - qa-review-04.yaml
+  - qa-relax-05.yaml
+
+total_coherence_target: 0.85
+
+themes:
+  - "Technical communication"
+  - "Professional diplomacy"
+  - "Team collaboration"
+  - "Work-life balance abroad"
+
+target_audience:
+  - "Tech professionals relocating"
+  - "Remote workers going on-site"
+  - "QA engineers joining international teams"
+
+emotional_arc: |
+  You start nervous at the interview, gradually build confidence through
+  daily work rituals, learn to disagree respectfully, and finally find
+  your authentic voice even in casual moments. By the end, work feels
+  like home—not just a job.
