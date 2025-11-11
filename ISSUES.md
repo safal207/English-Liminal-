@@ -444,4 +444,381 @@
 
 ---
 
-**Следующий шаг:** Начать с Issue A1 → инициализация Flutter + навигация (уже готово ✓), затем A2 → FFI биндинги.
+## Phase 2: Role Intelligence (недели 4-8)
+
+### Milestone F — Role Framework
+
+#### Issue F1 — Модель Role в Rust ✅
+
+**Описание:**
+Создать `core/src/roles.rs` с типами Role, RoleCoherenceScore, RolePath.
+
+**Детали реализации:**
+- [x] Тип `Role` (id, title, goal, benchmarks, scenario_ids)
+- [x] Тип `RoleCoherenceScore` с методами:
+  - `calculate()` — base + bonuses - penalties
+  - `level()` — Novice/Emerging/Developing/Proficient/Mastered
+  - `complete_scenario()`, `mark_wild()`, `skip_step()`
+- [x] Тип `RolePath` (последовательность ролей)
+- [x] Юнит-тесты для coherence score
+
+**Acceptance:**
+- [x] Все типы скомпилированы
+- [x] Тесты проходят
+- [x] API документирован
+
+---
+
+#### Issue F2 — YAML для ролей
+
+**Описание:**
+Создать структуру YAML для описания ролей и первый пример.
+
+**Детали реализации:**
+- [x] Директория `assets/roles/`
+- [x] Схема YAML для Role (id, title, goal, benchmarks, scenario_ids, stages)
+- [x] Первая роль: `qa-engineer-abroad.yaml`
+- [ ] Валидация через serde_yaml в Rust
+
+**Acceptance:**
+- [x] YAML корректно парсится
+- [ ] Rust функция `load_role(id)` работает
+- [x] Связь роли со сценариями проверена
+
+---
+
+#### Issue F3 — Сценарии для QA роли
+
+**Описание:**
+Создать сценарии для роли "QA Engineer Abroad".
+
+**Детали реализации:**
+- [x] `qa-interview-technical-01.yaml` — объяснение философии тестирования
+- [x] `bug-report-writing-01.yaml` — написание чёткого баг-репорта
+- [x] `code-review-feedback-01.yaml` — конструктивный фидбек
+- [ ] `release-planning-discussion-01.yaml` — обсуждение рисков релиза
+- [x] `standup-update-01.yaml` — уже существует
+
+**Acceptance:**
+- [x] 4/5 сценариев созданы
+- [ ] Все валидны и проходят через runner
+- [x] Контент реалистичен для QA роли
+
+---
+
+#### Issue F4 — Интеграция Role с БД
+
+**Описание:**
+Сохранение и загрузка ролей и user progress из SQLite.
+
+**Детали реализации:**
+- [ ] Таблица `roles` (id, title, goal, scenario_ids)
+- [ ] Таблица `user_roles`:
+  ```sql
+  CREATE TABLE user_roles(
+    user_id TEXT,
+    role_id TEXT,
+    completed_scenarios INTEGER,
+    use_in_wild_count INTEGER,
+    skipped_steps INTEGER,
+    coherence_score REAL,
+    started_at TEXT,
+    last_updated TEXT
+  );
+  ```
+- [ ] Методы в `storage.rs`:
+  - `save_role_progress(user_id, role_id, score)`
+  - `load_role_progress(user_id, role_id) -> RoleCoherenceScore`
+  - `get_user_roles(user_id) -> Vec<Role>`
+
+**Acceptance:**
+- [ ] Прогресс по ролям персистентен
+- [ ] Coherence score обновляется после каждого сценария
+- [ ] Данные доступны через FFI
+
+---
+
+#### Issue F5 — FFI API для ролей
+
+**Описание:**
+Экспортировать role функции для Flutter через flutter_rust_bridge.
+
+**Детали реализации:**
+- [ ] В `api.rs` добавить:
+  ```rust
+  #[frb(sync)]
+  pub fn load_roles_from_dir(dir: String) -> Result<u32, String>;
+
+  #[frb(sync)]
+  pub fn get_role_ids() -> Vec<String>;
+
+  #[frb(sync)]
+  pub fn get_role_json(role_id: String) -> Result<String, String>;
+
+  #[frb(sync)]
+  pub fn calculate_role_coherence(
+    role_id: String,
+    completed: u32,
+    wild: u32,
+    skipped: u32,
+  ) -> Result<f32, String>;
+  ```
+
+**Acceptance:**
+- [ ] Функции экспортируются в Dart
+- [ ] Вызов из Flutter возвращает корректные данные
+- [ ] Генерация биндингов без ошибок
+
+---
+
+### Milestone G — Role UI в Flutter
+
+#### Issue G1 — Role Picker Screen
+
+**Описание:**
+Экран выбора роли при первом запуске или в Settings.
+
+**Детали реализации:**
+- [ ] Создать `lib/screens/role_picker.dart`
+- [ ] Загрузка ролей через `native.getRoleIds()`
+- [ ] Карточки ролей с:
+  - Иконка, заголовок, описание
+  - Goal (что достигнешь)
+  - Количество сценариев
+- [ ] Выбор роли → сохранение в SharedPreferences
+- [ ] Интеграция в onboarding flow
+
+**Acceptance:**
+- [ ] Все роли отображаются
+- [ ] Выбор роли сохраняется
+- [ ] После выбора → переход на Home с этой ролью
+
+---
+
+#### Issue G2 — Role Dashboard
+
+**Описание:**
+Показать прогресс по текущей роли на Home screen.
+
+**Детали реализации:**
+- [ ] Обновить `lib/screens/home.dart`:
+  - Карточка текущей роли
+  - Coherence Score (круговой прогресс)
+  - Список сценариев роли (с чекмарками)
+  - Кнопка "Change Role"
+- [ ] Загрузка данных через:
+  ```dart
+  final coherence = await native.calculateRoleCoherence(...);
+  final roleJson = await native.getRoleJson(roleId);
+  ```
+
+**Acceptance:**
+- [ ] Coherence Score отображается визуально
+- [ ] Сценарии роли показаны с прогрессом
+- [ ] UI интуитивен и красив
+
+---
+
+#### Issue G3 — Coherence Score визуализация
+
+**Описание:**
+Круговая/спиральная визуализация уровня владения ролью.
+
+**Детали реализации:**
+- [ ] Виджет `CoherenceCircle` (Flutter CustomPainter)
+- [ ] Цвета по уровню:
+  - Novice: серый
+  - Emerging: жёлтый
+  - Developing: оранжевый
+  - Proficient: зелёный
+  - Mastered: золотой
+- [ ] Анимация при обновлении score
+- [ ] Текст: "75% Proficient"
+
+**Acceptance:**
+- [ ] Визуализация красива и понятна
+- [ ] Анимация плавная
+- [ ] Работает на iOS и Android
+
+---
+
+#### Issue G4 — Liminal Transition Animation
+
+**Описание:**
+Анимация перехода к новой роли (когда текущая завершена).
+
+**Детали реализации:**
+- [ ] Триггер: когда Coherence Score ≥ 75%
+- [ ] Показать модальное окно:
+  - "You're ready for the next role!"
+  - Визуализация: текущая роль → transition space → новая роль
+  - Кнопка "Begin New Role"
+- [ ] Анимация: fade + blur + rotate (liminal space aesthetic)
+- [ ] Сохранение: старая роль → completed, новая → active
+
+**Acceptance:**
+- [ ] Анимация выглядит красиво и "лиминально"
+- [ ] Переход к новой роли сохраняется
+- [ ] Эмоциональный эффект: момент трансформации
+
+---
+
+### Milestone H — Контент для ролей
+
+#### Issue H1 — QA Engineer (5 сцен) ✅
+
+**Статус:** 4/5 готово
+
+- [x] `qa-interview-technical-01.yaml`
+- [x] `standup-update-01.yaml`
+- [x] `bug-report-writing-01.yaml`
+- [x] `code-review-feedback-01.yaml`
+- [ ] `release-planning-discussion-01.yaml`
+
+---
+
+#### Issue H2 — Visa Applicant (3 сцены)
+
+**Описание:**
+Роль для прохождения визового интервью.
+
+**Сценарии:**
+- [ ] `visa-interview-purpose-01.yaml` — объяснение цели поездки
+- [ ] `visa-interview-ties-01.yaml` — доказательство связей с родиной
+- [ ] `visa-interview-financials-01.yaml` — финансовая состоятельность
+
+**Role YAML:**
+```yaml
+id: visa-applicant
+title: "Visa Applicant"
+goal: "Pass visa interview confidently"
+```
+
+---
+
+#### Issue H3 — Diplomatic Communicator (2 сцены)
+
+**Описание:**
+Деликатное общение в конфликтных ситуациях.
+
+**Сценарии:**
+- [ ] `diplomatic-disagreement-01.yaml` — несогласие без конфронтации
+- [ ] `diplomatic-apology-01.yaml` — искреннее извинение
+
+---
+
+#### Issue H4 — Hospitality Professional (3 сцены)
+
+**Описание:**
+Работа в индустрии гостеприимства.
+
+**Сценарии:**
+- [ ] `hospitality-greeting-guest-01.yaml` — приветствие гостя
+- [ ] `hospitality-complaint-handling-01.yaml` — работа с жалобами
+- [ ] `hospitality-upselling-01.yaml` — предложение дополнительных услуг
+
+---
+
+#### Issue H5 — Family Abroad (2 сцены)
+
+**Описание:**
+Жизнь с семьёй в англоязычной стране.
+
+**Сценарии:**
+- [ ] `family-parent-teacher-meeting-01.yaml` — встреча с учителем
+- [ ] `family-doctor-appointment-01.yaml` — визит к врачу с ребёнком
+
+---
+
+### Milestone I — Role Paths
+
+#### Issue I1 — RolePath в Rust ✅
+
+**Статус:** Уже реализовано в `core/src/roles.rs`
+
+- [x] Тип `RolePath` (id, title, role_ids)
+- [x] Методы: `next_role()`, `progress()`
+- [x] Тесты
+
+---
+
+#### Issue I2 — YAML для путей
+
+**Описание:**
+Создать файлы YAML для ролевых путей.
+
+**Примеры путей:**
+```yaml
+# assets/paths/work-abroad.yaml
+id: work-abroad
+title: "Work Abroad"
+role_ids:
+  - visa-applicant
+  - job-seeker
+  - qa-engineer
+  - senior-qa
+  - technical-mentor
+```
+
+**Детали:**
+- [ ] `work-abroad.yaml`
+- [ ] `study-abroad.yaml`
+- [ ] `family-life-abroad.yaml`
+
+---
+
+#### Issue I3 — Path Selection UI
+
+**Описание:**
+Экран выбора пути в onboarding.
+
+**Детали:**
+- [ ] Создать `lib/screens/path_selection.dart`
+- [ ] 3 карточки путей
+- [ ] Визуализация: линия/спираль ролей в пути
+- [ ] Выбор → сохранение → открытие первой роли
+
+---
+
+#### Issue I4 — Path Progress Tracking
+
+**Описание:**
+Отслеживание прогресса по пути в БД и UI.
+
+**Детали:**
+- [ ] Таблица `user_paths` в SQLite
+- [ ] Виджет `PathProgressBar` — сколько ролей завершено
+- [ ] На Home screen показать: "3/5 roles completed in 'Work Abroad'"
+
+---
+
+## Приоритизация (обновлённая)
+
+**P0 (Must Have для MVP):**
+- Issue A1-A2 (Flutter + FFI setup)
+- Issue B1-B4 (Rust core)
+- Issue C1 (Warmup flow)
+- Issue D1 (5 YAML scenes)
+
+**P1 (Should Have):**
+- Issue C2-C3 (Ping, Rinse)
+- Issue C4 (Notifications)
+- Issue D2 (Stats)
+- **Issue F1-F3 (Role Framework foundation)** ✅
+
+**P2 (Phase 2 - Role Intelligence):**
+- Issue F4-F5 (Role storage + FFI)
+- Issue G1-G4 (Role UI)
+- Issue H1-H5 (Content for roles)
+- Issue I1-I4 (Role Paths)
+
+**P3 (Phase 3 - Social Impact):**
+- Community scenes
+- Social metrics
+- Mission integration
+
+---
+
+**Следующий шаг:**
+1. **Immediate:** Issue A2 → FFI биндинги
+2. **After MVP:** Issue F4 → Role storage integration

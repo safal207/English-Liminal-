@@ -1,0 +1,38 @@
+id: qa-interview-technical-01
+title: "QA Interview: Testing Philosophy"
+description: "Explain your approach to testing in a technical interview"
+context_triggers:
+  time: any
+  location: work
+  duration_max_sec: 300
+goals:
+  - "Articulate your testing philosophy clearly"
+  - "Use industry terminology naturally"
+  - "Show structured thinking"
+steps:
+  - type: listen
+    prompt: "Listen to the interviewer's question:"
+    content: "Can you walk me through your approach to testing a new feature?"
+
+  - type: speak_check
+    prompt: "Answer the question:"
+    content: "I start by understanding the requirements, then I design test cases covering happy paths, edge cases, and error scenarios. I prioritize based on risk and impact."
+    ref_text: "I start by understanding the requirements then I design test cases covering happy paths edge cases and error scenarios I prioritize based on risk and impact"
+    hints:
+      - "Structure: Understand → Design → Prioritize"
+      - "Use concrete terms: 'test cases', 'edge cases', 'risk'"
+
+  - type: contrast
+    prompt: "Which answer sounds more professional?"
+    answers:
+      - "I start by understanding requirements, then design test cases covering happy paths, edge cases, and error scenarios."
+      - "I just test everything until I find bugs."
+      - "I do what my manager tells me to do."
+
+  - type: apply_to_life
+    prompt: "Explain YOUR real testing philosophy in 2-3 sentences"
+
+rehearsal:
+  decay_alpha: 0.88
+  next_ping_sec_min: 300
+  next_ping_sec_max: 86400

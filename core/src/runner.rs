@@ -42,7 +42,7 @@ impl RunnerState {
         script.steps.get(self.current_index).map(|s| s.r#type.clone())
     }
 
-    pub fn current_step(&self, script: &Script) -> Option<&crate::scripts::Step> {
+    pub fn current_step<'a>(&self, script: &'a Script) -> Option<&'a crate::scripts::Step> {
         script.steps.get(self.current_index)
     }
 
@@ -91,9 +91,16 @@ mod tests {
         let script = mock_script();
         let mut runner = RunnerState::new(&script);
 
-        assert_eq!(runner.progress(&script), 0.5); // 1/2
+        // Initially at step 0, which is 1/2 = 0.5
+        assert_eq!(runner.progress(&script), 0.5);
+        assert!(!runner.completed);
+
+        // Move to step 1 (last step), which is 2/2 = 1.0
         runner.next(&script);
-        assert_eq!(runner.progress(&script), 1.0); // 2/2
+        assert_eq!(runner.progress(&script), 1.0);
+
+        // Move past last step, should complete
+        runner.next(&script);
         assert!(runner.completed);
     }
 }

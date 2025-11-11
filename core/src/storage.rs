@@ -63,29 +63,27 @@ impl Store {
 
     pub fn get_events(&self, kind: Option<&str>, limit: usize) -> Result<Vec<serde_json::Value>> {
         let mut query = "SELECT ts, kind, payload FROM events".to_string();
-        if kind.is_some() {
+        let mut params_vec: Vec<Box<dyn rusqlite::ToSql>> = Vec::new();
+
+        if let Some(k) = kind {
             query.push_str(" WHERE kind = ?1");
+            params_vec.push(Box::new(k.to_string()));
         }
         query.push_str(" ORDER BY ts DESC LIMIT ?");
+        params_vec.push(Box::new(limit));
 
         let mut stmt = self.conn.prepare(&query)?;
-        let rows = if let Some(k) = kind {
-            stmt.query_map(params![k, limit], |row| {
-                Ok(serde_json::json!({
-                    "ts": row.get::<_, String>(0)?,
-                    "kind": row.get::<_, String>(1)?,
-                    "payload": row.get::<_, String>(2)?,
-                }))
-            })?
-        } else {
-            stmt.query_map(params![limit], |row| {
-                Ok(serde_json::json!({
-                    "ts": row.get::<_, String>(0)?,
-                    "kind": row.get::<_, String>(1)?,
-                    "payload": row.get::<_, String>(2)?,
-                }))
-            })?
-        };
+
+        let params_refs: Vec<&dyn rusqlite::ToSql> =
+            params_vec.iter().map(|p| p.as_ref() as &dyn rusqlite::ToSql).collect();
+
+        let rows = stmt.query_map(params_refs.as_slice(), |row| {
+            Ok(serde_json::json!({
+                "ts": row.get::<_, String>(0)?,
+                "kind": row.get::<_, String>(1)?,
+                "payload": row.get::<_, String>(2)?,
+            }))
+        })?;
 
         rows.collect::<Result<Vec<_>, _>>().map_err(Into::into)
     }
