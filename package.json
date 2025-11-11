@@ -1,0 +1,62 @@
+{
+  "name": "english-liminal",
+  "version": "0.1.0",
+  "description": "Context-aware English learning through micro-scenarios and wave memory",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "dev": "cd app && pnpm expo start",
+    "start": "cd app && pnpm expo start",
+    "android": "cd app && pnpm expo start --android",
+    "ios": "cd app && pnpm expo start --ios",
+    "web": "cd app && pnpm expo start --web",
+    "install:app": "cd app && pnpm install",
+    "install:server": "cd server && pnpm install",
+    "install:all": "pnpm install:app && pnpm install:server",
+    "lint": "cd app && pnpm lint",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "type-check": "cd app && pnpm tsc --noEmit",
+    "clean": "rm -rf node_modules app/node_modules server/node_modules",
+    "clean:cache": "rm -rf .expo app/.expo",
+    "test": "echo \"Tests will be added in future milestones\"",
+    "prepare": "husky install"
+  },
+  "keywords": [
+    "english",
+    "learning",
+    "education",
+    "language",
+    "mobile",
+    "expo",
+    "react-native",
+    "liminal"
+  ],
+  "author": "English-Liminal Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/safal207/English-Liminal-"
+  },
+  "workspaces": [
+    "app",
+    "server"
+  ],
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "devDependencies": {
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.1.1"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.{json,md,yaml,yml}": [
+      "prettier --write"
+    ]
+  }
+}

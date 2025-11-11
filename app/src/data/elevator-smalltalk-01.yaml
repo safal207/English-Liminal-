@@ -1,0 +1,59 @@
+id: elevator-smalltalk-01
+title: "Elevator Small Talk"
+description: "Quick casual conversation starters for awkward elevator moments"
+context_triggers:
+  - time: afternoon
+  - location: work
+  - duration_max_sec: 120
+goals:
+  - "Break the ice with simple questions"
+  - "Practice intonation for questions"
+  - "Sound friendly, not forced"
+steps:
+  - type: listen
+    prompt: "Listen to common elevator small talk:"
+    content: "Nice weather today, isn't it? / Going up? / How's your day going?"
+    target: "casual questions"
+
+  - type: speak_check
+    prompt: "Try this friendly opener:"
+    content: "How's your day going?"
+    ref_text: "How's your day going"
+    eval: pronunciation
+    hints:
+      - "Rising intonation on 'going' shows it's a question"
+      - "Casual contraction: 'How's' not 'How is'"
+
+  - type: contrast
+    prompt: "Which is most natural for small talk?"
+    question: "In an elevator with a colleague:"
+    answers:
+      - text: "How's it going?"
+        correct: true
+        explanation: "Perfect casual greeting, very common"
+      - text: "What is the current status of your daily activities?"
+        correct: false
+        explanation: "Way too formal and awkward for small talk"
+      - text: "Going up or down?"
+        correct: true
+        explanation: "Also good, practical question"
+
+  - type: apply_to_life
+    prompt: "Your elevator line"
+    instruction: "Create your own quick small talk line and say it naturally"
+    examples:
+      - "Crazy weather, right?"
+      - "TGIF! Any plans for the weekend?"
+      - "Long day, huh?"
+    recording: true
+
+rehearsal:
+  decay_alpha: 0.80
+  next_ping_sec_min: 180
+  next_ping_sec_max: 10800
+  importance: medium
+  tags:
+    - conversation
+    - smalltalk
+    - work
+    - intermediate

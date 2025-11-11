@@ -1,0 +1,61 @@
+id: morning-warmup-01
+title: "Morning Warmup: A/An & H-dropping"
+description: "Practice using 'a' and 'an' correctly, especially with words starting with silent 'h'"
+context_triggers:
+  - time: morning
+  - duration_max_sec: 240
+goals:
+  - "Различать a/an перед hour, honest (немая h)"
+  - "Произнести 3 фразы в темпе речи"
+  - "Применить в реальной ситуации"
+steps:
+  - type: listen
+    prompt: "Listen carefully to these phrases:"
+    content: "an hour, an honest answer, a hotel, a user"
+    target: "артикли a/an"
+
+  - type: speak_check
+    prompt: "Now it's your turn. Say this phrase:"
+    content: "I'll be there in an hour."
+    ref_text: "I'll be there in an hour"
+    eval: pronunciation
+    hints:
+      - "Focus on 'an' before the silent 'h' in 'hour'"
+      - "The 'h' in 'hour' is not pronounced"
+
+  - type: contrast
+    prompt: "Choose the correct article for each word:"
+    question: "Which article should we use?"
+    answers:
+      - text: "an hour"
+        correct: true
+        explanation: "'Hour' starts with a vowel sound (silent h)"
+      - text: "a hour"
+        correct: false
+        explanation: "We use 'an' before vowel sounds"
+      - text: "a user"
+        correct: true
+        explanation: "'User' starts with a consonant sound /ju:/"
+      - text: "an user"
+        correct: false
+        explanation: "Despite 'u', 'user' starts with /ju:/ sound"
+
+  - type: apply_to_life
+    prompt: "Create your own sentence using 'an hour' or 'a hotel'"
+    instruction: "Think of something you'll do today and say it out loud"
+    examples:
+      - "I have a meeting in an hour"
+      - "I need to book a hotel for next week"
+      - "It takes an hour to get there"
+    recording: true
+
+rehearsal:
+  decay_alpha: 0.82
+  next_ping_sec_min: 90
+  next_ping_sec_max: 3600
+  importance: high
+  tags:
+    - grammar
+    - articles
+    - pronunciation
+    - beginner

@@ -1,0 +1,59 @@
+id: cafe-to-go-01
+title: "Coffee Shop: Ordering To Go"
+description: "Practice ordering coffee with common phrases and pronunciation"
+context_triggers:
+  - time: morning
+  - location: cafe
+  - duration_max_sec: 180
+goals:
+  - "Order coffee confidently using natural phrases"
+  - "Practice 'to go' vs 'for here'"
+  - "Use polite requests"
+steps:
+  - type: listen
+    prompt: "Listen to a typical coffee order:"
+    content: "Can I get a large latte to go, please?"
+    target: "ordering phrases"
+
+  - type: speak_check
+    prompt: "Now order your coffee:"
+    content: "Can I get a medium cappuccino to go?"
+    ref_text: "Can I get a medium cappuccino to go"
+    eval: pronunciation
+    hints:
+      - "Stress 'medium' and 'cappuccino'"
+      - "'To go' is casual, 'for takeaway' is more formal"
+
+  - type: contrast
+    prompt: "Which phrase sounds more natural?"
+    question: "Choose the most common way to order:"
+    answers:
+      - text: "Can I get a coffee to go?"
+        correct: true
+        explanation: "Very common and natural in US/Canada"
+      - text: "I want coffee for take away"
+        correct: false
+        explanation: "Should be 'takeaway' (one word) or 'to go'"
+      - text: "Give me one coffee please"
+        correct: false
+        explanation: "Sounds too direct, use 'Can I get...'"
+
+  - type: apply_to_life
+    prompt: "Order your favorite drink"
+    instruction: "Say your real coffee order out loud (size + drink + to go/for here)"
+    examples:
+      - "Can I get a small black coffee to go?"
+      - "I'll have a large green tea for here"
+      - "Can I get an iced latte, medium, to go?"
+    recording: true
+
+rehearsal:
+  decay_alpha: 0.85
+  next_ping_sec_min: 120
+  next_ping_sec_max: 7200
+  importance: high
+  tags:
+    - conversation
+    - ordering
+    - cafe
+    - beginner
