@@ -1,0 +1,58 @@
+id: border_control_02
+role_id: visa_journey
+title: "Border Control: First Entry"
+difficulty: beginner
+emotion_wave: respectful_brief
+description: "Answer border officer's questions at passport control. Keep answers short, polite, and truthful."
+
+goals:
+  - "Brief, direct responses"
+  - "Respectful tone"
+  - "Managing first-entry nerves"
+
+context: |
+  You've landed at the airport. You're at passport control for your first entry.
+  The border officer will ask standard questions. Answer briefly and clearly.
+  Don't over-explain. Have your documents ready.
+
+steps:
+  - type: listen
+    prompt: "Passport please. What's the purpose of your visit?"
+    audio_hint: "Authoritative but neutral tone"
+
+  - type: speak_check
+    prompt: "State purpose briefly"
+    ref_text: "Work. I have a job offer as a QA Engineer."
+    difficulty: beginner
+    emotion_tag: brief_confident
+
+  - type: listen
+    prompt: "How long are you staying?"
+
+  - type: speak_check
+    prompt: "Answer with timeframe"
+    ref_text: "Three years initially."
+    difficulty: beginner
+    emotion_tag: clear
+
+  - type: listen
+    prompt: "Where will you be living?"
+
+  - type: speak_check
+    prompt: "Provide address information"
+    ref_text: "In San Francisco. My employer has arranged temporary housing for the first month, then I'll find an apartment."
+    difficulty: beginner
+    emotion_tag: prepared
+
+  - type: apply_to_life
+    prompt: "Представь, что это твоя реальная ситуация. Куда ты едешь? Где будешь жить?"
+    hint: "Кратко и по делу. На границе не любят длинных историй."
+
+rehearsal:
+  decay_alpha: 0.82
+  next_ping_sec_min: 180
+  next_ping_sec_max: 3600
+  success_threshold: 0.75
+
+coherence_weight: 0.20
+transition_message: "Welcome to your new chapter. You've crossed the border with confidence."

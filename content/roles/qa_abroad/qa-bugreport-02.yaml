@@ -1,0 +1,48 @@
+id: qa_bugreport_02
+role_id: qa_engineer_abroad
+title: "Bug Report: Diplomatic Communication"
+difficulty: intermediate
+emotion_wave: diplomatic_clear
+description: "Report a critical bug to developers without sounding accusatory. Balance urgency with respect."
+
+goals:
+  - "Professional tone when reporting issues"
+  - "Clear technical communication"
+  - "Constructive feedback delivery"
+
+context: |
+  You've found a critical bug in production. You need to report it to the development
+  team in a way that's urgent but not blaming. The team is under pressure.
+
+steps:
+  - type: listen
+    prompt: "Hey, I saw you marked this ticket as urgent. What's going on?"
+    audio_hint: "Slightly stressed tone"
+
+  - type: speak_check
+    prompt: "Explain the bug politely but urgently"
+    ref_text: "I found an issue that's affecting user payments. When users try to checkout with multiple items, the total calculates incorrectly. I've documented the steps to reproduce it and attached screenshots. Could we prioritize this?"
+    difficulty: intermediate
+    emotion_tag: calm_urgent
+
+  - type: listen
+    prompt: "Oh wow, that's serious. Do you know what's causing it?"
+
+  - type: speak_check
+    prompt: "Share your technical hypothesis"
+    ref_text: "I suspect it might be related to the recent discount logic changes. The calculation seems off when discounts are applied to specific product categories. I tested it across different scenarios and the pattern is consistent."
+    difficulty: intermediate
+    emotion_tag: analytical
+
+  - type: apply_to_life
+    prompt: "Теперь вспомни реальный баг, который ты находил на своей работе. Опиши его так же дипломатично и чётко."
+    hint: "Баланс между срочностью и уважением к работе разработчиков"
+
+rehearsal:
+  decay_alpha: 0.86
+  next_ping_sec_min: 240
+  next_ping_sec_max: 4800
+  success_threshold: 0.78
+
+coherence_weight: 0.20
+transition_message: "You're learning to communicate technical problems with grace. This is a key skill abroad."

@@ -1,0 +1,49 @@
+id: qa_interview_01
+role_id: qa_engineer_abroad
+title: "Tech Interview: QA Process"
+difficulty: beginner
+emotion_wave: calm_confident
+description: "First interview with a potential employer abroad. Stay calm, explain your QA process clearly."
+
+goals:
+  - "Clear pronunciation of technical terms"
+  - "Confident self-presentation"
+  - "Understanding interviewer's questions"
+
+context: |
+  You're interviewing for a QA Engineer position at a tech company abroad.
+  The interviewer wants to understand your testing approach and experience.
+  Stay professional but friendly.
+
+steps:
+  - type: listen
+    prompt: "Good morning! Thanks for joining us today. Could you start by telling me about your QA process? How do you typically approach testing a new feature?"
+    audio_hint: "Professional tone, medium pace"
+
+  - type: speak_check
+    prompt: "Describe how you approach QA testing for a new feature"
+    ref_text: "I usually start by reviewing the requirements carefully, then I create test scenarios covering both happy paths and edge cases. After that, I prioritize tests based on risk and user impact."
+    difficulty: beginner
+    emotion_tag: confident
+
+  - type: listen
+    prompt: "That sounds thorough. Can you tell me about a time when you found a critical bug right before release? How did you handle it?"
+
+  - type: speak_check
+    prompt: "Tell a story about finding a critical bug"
+    ref_text: "Once, I discovered a security issue during final testing. I immediately documented it with clear reproduction steps, assessed the severity, and escalated it to the team lead. We delayed the release by two days to fix it properly."
+    difficulty: intermediate
+    emotion_tag: calm
+
+  - type: apply_to_life
+    prompt: "Теперь адаптируй эту ситуацию под свой реальный опыт. Вспомни баг, который ты нашёл, и расскажи эту историю своими словами."
+    hint: "Говори естественно, как будто это обычный разговор с коллегой"
+
+rehearsal:
+  decay_alpha: 0.84
+  next_ping_sec_min: 180
+  next_ping_sec_max: 3600
+  success_threshold: 0.75
+
+coherence_weight: 0.15
+transition_message: "You've taken the first step into your role as a QA professional abroad. The interview is just the beginning."

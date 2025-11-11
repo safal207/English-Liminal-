@@ -1,0 +1,58 @@
+id: airport_lounge_01
+role_id: global_citizen
+title: "Airport Lounge: Coffee and Connection"
+difficulty: beginner
+emotion_wave: friendly_casual
+description: "Order coffee at an airport cafe and make small talk with a stranger. Practice casual English in transit."
+
+goals:
+  - "Ordering food/drinks naturally"
+  - "Small talk with strangers"
+  - "Casual, relaxed English"
+
+context: |
+  You're at an airport during a layover. You go to a cafe to grab coffee.
+  There's a short wait, and someone next to you starts chatting about the flight delays.
+  This is a low-pressure chance to practice casual conversation.
+
+steps:
+  - type: listen
+    prompt: "Hi there! What can I get for you today?"
+    audio_hint: "Upbeat barista tone"
+
+  - type: speak_check
+    prompt: "Order your coffee"
+    ref_text: "Hi! I'll have a medium latte, please. Can I also get a croissant?"
+    difficulty: beginner
+    emotion_tag: friendly_clear
+
+  - type: listen
+    prompt: "Sure thing! For here or to go?"
+
+  - type: speak_check
+    prompt: "Specify to-go or for-here"
+    ref_text: "To go, please. I have a flight in about an hour."
+    difficulty: beginner
+    emotion_tag: casual
+
+  - type: listen
+    prompt: "(While waiting) Ugh, flights are so delayed today. Are you heading somewhere fun?"
+
+  - type: speak_check
+    prompt: "Respond to small talk"
+    ref_text: "Yeah, heading to San Francisco for work. How about you?"
+    difficulty: beginner
+    emotion_tag: friendly_open
+
+  - type: apply_to_life
+    prompt: "Теперь закажи что-то, что ты реально любишь заказывать в кафе, и расскажи, куда направляешься."
+    hint: "Это просто болтовня в очереди, расслабься"
+
+rehearsal:
+  decay_alpha: 0.78
+  next_ping_sec_min: 120
+  next_ping_sec_max: 2400
+  success_threshold: 0.70
+
+coherence_weight: 0.15
+transition_message: "Small moments in transit shape who you become. You're at ease anywhere now."

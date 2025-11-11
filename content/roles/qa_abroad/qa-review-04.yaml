@@ -1,0 +1,49 @@
+id: qa_review_04
+role_id: qa_engineer_abroad
+title: "Code Review: Polite Disagreement"
+difficulty: advanced
+emotion_wave: respectful_critical
+description: "Point out issues in someone's work without damaging relationships. Disagree constructively."
+
+goals:
+  - "Diplomatic disagreement"
+  - "Constructive criticism delivery"
+  - "Maintaining team harmony"
+
+context: |
+  You're reviewing a colleague's test automation script. You notice some issues
+  that could cause problems. You need to provide feedback that's honest but kind.
+  The colleague is sensitive about their code.
+
+steps:
+  - type: listen
+    prompt: "Hey, did you get a chance to review my test script? I tried a new approach with the data fixtures."
+    audio_hint: "Hopeful, slightly nervous tone"
+
+  - type: speak_check
+    prompt: "Start with positive feedback, then raise concerns"
+    ref_text: "I really like the way you structured the fixtures, that's much cleaner than before. I do have one concern though—I noticed the cleanup logic might not run if a test fails midway. Could we add a try-finally block to ensure cleanup always happens?"
+    difficulty: advanced
+    emotion_tag: respectful_analytical
+
+  - type: listen
+    prompt: "Oh, hmm, I didn't think about that. Do you think it's a big issue?"
+
+  - type: speak_check
+    prompt: "Explain the impact without overreacting"
+    ref_text: "It could cause problems in our CI pipeline if tests leave behind test data. It's not critical right now, but I think it's worth fixing before we merge. I can pair with you on it if you'd like?"
+    difficulty: advanced
+    emotion_tag: collaborative
+
+  - type: apply_to_life
+    prompt: "Вспомни ситуацию, когда тебе нужно было указать коллеге на проблему в его работе. Как бы ты сформулировал это по-английски максимально мягко?"
+    hint: "Баланс между честностью и уважением"
+
+rehearsal:
+  decay_alpha: 0.88
+  next_ping_sec_min: 300
+  next_ping_sec_max: 7200
+  success_threshold: 0.82
+
+coherence_weight: 0.25
+transition_message: "You've mastered the art of respectful disagreement. This is leadership material."

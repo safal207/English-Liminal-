@@ -1,0 +1,58 @@
+id: neighbours_chat_02
+role_id: family_abroad
+title: "Meeting Neighbors: Building Community"
+difficulty: beginner
+emotion_wave: friendly_open
+description: "Introduce yourself to neighbors and their kids. Start building a local support network for your family."
+
+goals:
+  - "Warm self-introduction"
+  - "Finding common ground"
+  - "Building local connections"
+
+context: |
+  You're outside with your child at the playground near your apartment.
+  Another parent with kids around the same age approaches. This is a chance
+  to make friends and build a support network in your new community.
+
+steps:
+  - type: listen
+    prompt: "Hi! I don't think we've met yet. Are you new to the building?"
+    audio_hint: "Friendly, curious tone"
+
+  - type: speak_check
+    prompt: "Introduce yourself warmly"
+    ref_text: "Hi! Yes, we just moved in a few weeks ago. I'm Alex, and this is my daughter Emma. She's four."
+    difficulty: beginner
+    emotion_tag: friendly_warm
+
+  - type: listen
+    prompt: "Oh nice! Welcome to the neighborhood! I'm Sarah, and this is my son Ben. He just turned five. Where did you move from?"
+
+  - type: speak_check
+    prompt: "Share a bit about your background"
+    ref_text: "We moved from Moscow. I got a job here, so we decided to make the move. It's been an adjustment, but everyone's been really welcoming so far."
+    difficulty: beginner
+    emotion_tag: open_honest
+
+  - type: listen
+    prompt: "That's a big move! If you ever need recommendations for pediatricians or kid-friendly spots, just let me know. There's a great park about 10 minutes from here."
+
+  - type: speak_check
+    prompt: "Express gratitude and show interest"
+    ref_text: "Thank you, I really appreciate that! We're still figuring everything out. Emma loves parks—maybe we could meet up there sometime? She'd love to have a friend to play with."
+    difficulty: beginner
+    emotion_tag: grateful_hopeful
+
+  - type: apply_to_life
+    prompt: "Теперь представь реальное знакомство с соседом. Расскажи немного о себе и предложи встретиться."
+    hint: "Это начало дружбы—будь открытым и искренним"
+
+rehearsal:
+  decay_alpha: 0.80
+  next_ping_sec_min: 180
+  next_ping_sec_max: 3600
+  success_threshold: 0.72
+
+coherence_weight: 0.20
+transition_message: "Home isn't just a place—it's a community. You're building yours."

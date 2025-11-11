@@ -1,0 +1,58 @@
+id: visa_officer_01
+role_id: visa_journey
+title: "Consulate Interview: Purpose of Visit"
+difficulty: intermediate
+emotion_wave: calm_precise
+description: "Answer visa officer's questions with clarity and confidence. Stay honest, clear, and composed."
+
+goals:
+  - "Clear articulation under pressure"
+  - "Honest, direct answers"
+  - "Managing interview stress"
+
+context: |
+  You're at the consulate for your visa interview. The officer will ask about
+  your purpose, ties to home country, and financial situation. Stay calm,
+  answer directly, and maintain eye contact (or camera contact if online).
+
+steps:
+  - type: listen
+    prompt: "Good morning. Please state the purpose of your visit to the United States."
+    audio_hint: "Formal, neutral tone"
+
+  - type: speak_check
+    prompt: "State your purpose clearly"
+    ref_text: "Good morning. I'm traveling for employment purposes. I've been offered a position as a QA Engineer at a technology company in San Francisco, and I have an employment contract with them."
+    difficulty: intermediate
+    emotion_tag: calm_confident
+
+  - type: listen
+    prompt: "I see. How long do you intend to stay?"
+
+  - type: speak_check
+    prompt: "Answer with specific timeframe"
+    ref_text: "I intend to stay for three years initially, as stated in my contract. My visa application is for an H-1B work visa for this duration."
+    difficulty: intermediate
+    emotion_tag: precise
+
+  - type: listen
+    prompt: "What ties do you have to your home country? Family? Property?"
+
+  - type: speak_check
+    prompt: "Explain your ties to home country"
+    ref_text: "I have family in my home country—my parents and younger sister. I also own an apartment there. I plan to visit regularly and eventually return after gaining international experience."
+    difficulty: intermediate
+    emotion_tag: honest_calm
+
+  - type: apply_to_life
+    prompt: "Теперь адаптируй под свою реальную ситуацию: твоя цель поездки, твои связи с родной страной."
+    hint: "Говори честно и прямо. Визовые офицеры ценят ясность."
+
+rehearsal:
+  decay_alpha: 0.87
+  next_ping_sec_min: 240
+  next_ping_sec_max: 5400
+  success_threshold: 0.80
+
+coherence_weight: 0.25
+transition_message: "The visa interview is behind you. You spoke with clarity and confidence. The world is opening up."

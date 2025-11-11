@@ -1,0 +1,48 @@
+id: qa_relax_05
+role_id: qa_engineer_abroad
+title: "Small Talk: Weekend Plans"
+difficulty: beginner
+emotion_wave: relaxed_friendly
+description: "Casual conversation with a colleague. Build relationships through small talk about life outside work."
+
+goals:
+  - "Natural informal English"
+  - "Building rapport with colleagues"
+  - "Relaxed, authentic communication"
+
+context: |
+  It's Friday afternoon. You're grabbing coffee in the kitchen and run into a colleague.
+  Time for some casual chat about the weekend. No pressure, just friendly conversation.
+
+steps:
+  - type: listen
+    prompt: "Hey! Finally Friday, right? Any plans for the weekend?"
+    audio_hint: "Relaxed, friendly tone"
+
+  - type: speak_check
+    prompt: "Share your weekend plans casually"
+    ref_text: "Yeah, I'm so ready for the weekend! I'm thinking of checking out that new hiking trail near the city. How about you?"
+    difficulty: beginner
+    emotion_tag: friendly_relaxed
+
+  - type: listen
+    prompt: "Oh nice! I've heard that trail is beautiful. I'm probably just going to catch up on some reading and maybe binge a new series. You into hiking?"
+
+  - type: speak_check
+    prompt: "Continue the conversation naturally"
+    ref_text: "Yeah, I try to get outside when I can. It helps me clear my head after a busy week. What series are you watching?"
+    difficulty: beginner
+    emotion_tag: curious_friendly
+
+  - type: apply_to_life
+    prompt: "Теперь расскажи о своих реальных планах на выходные. Говори естественно, как с другом."
+    hint: "Это не экзамен, это обычная беседа. Будь собой."
+
+rehearsal:
+  decay_alpha: 0.76
+  next_ping_sec_min: 180
+  next_ping_sec_max: 3600
+  success_threshold: 0.68
+
+coherence_weight: 0.22
+transition_message: "Small talk isn't small—it's how you become part of the team. You're doing great."

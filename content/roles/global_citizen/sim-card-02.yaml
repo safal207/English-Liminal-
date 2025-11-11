@@ -1,0 +1,57 @@
+id: sim_card_02
+role_id: global_citizen
+title: "SIM Card Shop: Getting Connected"
+difficulty: intermediate
+emotion_wave: practical_curious
+description: "Buy a local SIM card and choose the right plan. Navigate options, ask questions, compare prices."
+
+goals:
+  - "Understanding service plans"
+  - "Asking clarifying questions"
+  - "Making informed decisions"
+
+context: |
+  You've just arrived and need a local SIM card with data. The shop has several plans.
+  You need to ask about coverage, data limits, and costs. Don't be shy—ask until you understand.
+
+steps:
+  - type: listen
+    prompt: "Hi! Looking for a SIM card? We have prepaid and monthly plans. What do you need?"
+    audio_hint: "Sales-friendly tone, slightly fast"
+
+  - type: speak_check
+    prompt: "Ask about plan options"
+    ref_text: "Hi, yes! I need a prepaid plan with data. What options do you have? I'm here for about three months."
+    difficulty: intermediate
+    emotion_tag: practical
+
+  - type: listen
+    prompt: "We have a 30-day plan with unlimited data for $50, or a pay-as-you-go option that's $25 a month but data is limited to 10GB. Which sounds better?"
+
+  - type: speak_check
+    prompt: "Ask clarifying questions"
+    ref_text: "Is the coverage good throughout the city? And if I run out of data on the pay-as-you-go plan, can I add more easily?"
+    difficulty: intermediate
+    emotion_tag: cautious_curious
+
+  - type: listen
+    prompt: "Yeah, coverage is excellent in the city and suburbs. You can top up data anytime through the app. It's $10 per additional 5GB."
+
+  - type: speak_check
+    prompt: "Make your decision"
+    ref_text: "Okay, I think I'll go with the pay-as-you-go option for now. I can always upgrade if I need more data, right?"
+    difficulty: intermediate
+    emotion_tag: confident_decisive
+
+  - type: apply_to_life
+    prompt: "Теперь представь, что выбираешь реальный тарифный план. Какие вопросы ты бы задал продавцу?"
+    hint: "Не стесняйся уточнять детали—это твои деньги"
+
+rehearsal:
+  decay_alpha: 0.83
+  next_ping_sec_min: 180
+  next_ping_sec_max: 3600
+  success_threshold: 0.76
+
+coherence_weight: 0.20
+transition_message: "Connected. You're no longer just visiting—you're part of this place."

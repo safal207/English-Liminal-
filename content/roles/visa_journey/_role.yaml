@@ -1,0 +1,29 @@
+id: visa_journey
+title: "Visa Journey"
+description: "Navigate the bureaucratic and emotional journey of obtaining a visa and settling in a new country. From consulate interviews to crossing borders to finding your first home."
+
+difficulty: intermediate
+estimated_duration_weeks: 2
+
+scenes:
+  - visa-officer-01.yaml
+  - border-control-02.yaml
+  - apartment-checkin-03.yaml
+
+total_coherence_target: 0.82
+
+themes:
+  - "Official communication"
+  - "Document-based interactions"
+  - "Assertive but respectful tone"
+  - "Managing high-stakes conversations"
+
+target_audience:
+  - "Anyone applying for work/study visas"
+  - "Immigrants and expats"
+  - "First-time international travelers"
+
+emotional_arc: |
+  The visa journey is liminal by nature—you're between worlds.
+  You start with formal interviews, move through border crossings,
+  and finally arrive at your first home abroad. Each step is a threshold.
