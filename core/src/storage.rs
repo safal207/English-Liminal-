@@ -4,6 +4,7 @@ use rusqlite::{params, Connection};
 use serde_json;
 
 use crate::retention::MemoryLink;
+use crate::roles::{EmotionTag, Reflection, ResonanceTrace, RoleProgress};
 
 pub struct Store {
     conn: Connection,
@@ -40,9 +41,50 @@ impl Store {
               progress REAL DEFAULT 0.0
             );
 
+            CREATE TABLE IF NOT EXISTS role_progress(
+              id INTEGER PRIMARY KEY,
+              role_id TEXT UNIQUE NOT NULL,
+              current_scene_index INTEGER NOT NULL,
+              total_scenes INTEGER NOT NULL,
+              coherence REAL NOT NULL,
+              last_transition TEXT,
+              consecutive_days INTEGER DEFAULT 0,
+              created_at TEXT NOT NULL,
+              updated_at TEXT NOT NULL
+            );
+
+            CREATE TABLE IF NOT EXISTS emotion_tags(
+              id INTEGER PRIMARY KEY,
+              role_id TEXT NOT NULL,
+              scene_id TEXT NOT NULL,
+              tone TEXT NOT NULL,
+              confidence REAL NOT NULL,
+              timestamp TEXT NOT NULL,
+              FOREIGN KEY(role_id) REFERENCES role_progress(role_id)
+            );
+
+            CREATE TABLE IF NOT EXISTS resonance_traces(
+              id TEXT PRIMARY KEY,
+              role_id TEXT NOT NULL,
+              scene_id TEXT NOT NULL,
+              message TEXT NOT NULL,
+              created_at TEXT NOT NULL
+            );
+
+            CREATE TABLE IF NOT EXISTS reflections(
+              id INTEGER PRIMARY KEY,
+              trace_id TEXT NOT NULL,
+              message TEXT NOT NULL,
+              created_at TEXT NOT NULL,
+              FOREIGN KEY(trace_id) REFERENCES resonance_traces(id)
+            );
+
             CREATE INDEX IF NOT EXISTS idx_events_ts ON events(ts);
             CREATE INDEX IF NOT EXISTS idx_events_kind ON events(kind);
             CREATE INDEX IF NOT EXISTS idx_memory_wave ON memory_links(wave);
+            CREATE INDEX IF NOT EXISTS idx_emotion_tags_role ON emotion_tags(role_id);
+            CREATE INDEX IF NOT EXISTS idx_resonance_traces_role ON resonance_traces(role_id);
+            CREATE INDEX IF NOT EXISTS idx_reflections_trace ON reflections(trace_id);
         "#,
         )?;
         Ok(Self { conn })
@@ -226,6 +268,252 @@ impl Store {
         });
 
         Ok(serde_json::to_string_pretty(&export)?)
+    }
+
+    // ========================================================================
+    // v1.1: Role Progress
+    // ========================================================================
+
+    pub fn save_role_progress(&self, progress: &RoleProgress) -> Result<()> {
+        // Save role progress
+        self.conn.execute(
+            r#"
+            INSERT INTO role_progress(role_id, current_scene_index, total_scenes, coherence, last_transition, consecutive_days, created_at, updated_at)
+            VALUES(?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)
+            ON CONFLICT(role_id) DO UPDATE SET
+              current_scene_index = excluded.current_scene_index,
+              total_scenes = excluded.total_scenes,
+              coherence = excluded.coherence,
+              last_transition = excluded.last_transition,
+              consecutive_days = excluded.consecutive_days,
+              updated_at = excluded.updated_at
+            "#,
+            params![
+                progress.role_id,
+                progress.current_scene_index as i64,
+                progress.total_scenes as i64,
+                progress.coherence,
+                progress.last_transition.map(|dt| dt.to_rfc3339()),
+                progress.consecutive_days as i64,
+                progress.created_at.to_rfc3339(),
+                progress.updated_at.to_rfc3339(),
+            ],
+        )?;
+
+        // Clear old emotion tags for this role
+        self.conn.execute(
+            "DELETE FROM emotion_tags WHERE role_id = ?1",
+            params![progress.role_id],
+        )?;
+
+        // Save emotion tags
+        for emotion in &progress.emotion_tags {
+            self.save_emotion_tag(&progress.role_id, emotion)?;
+        }
+
+        Ok(())
+    }
+
+    pub fn load_role_progress(&self, role_id: &str) -> Result<Option<RoleProgress>> {
+        let mut stmt = self.conn.prepare(
+            "SELECT role_id, current_scene_index, total_scenes, coherence, last_transition, consecutive_days, created_at, updated_at
+             FROM role_progress WHERE role_id = ?1",
+        )?;
+
+        let mut rows = stmt.query(params![role_id])?;
+        if let Some(row) = rows.next()? {
+            let created_at_str: String = row.get(6)?;
+            let updated_at_str: String = row.get(7)?;
+            let last_transition_str: Option<String> = row.get(4)?;
+
+            let created_at = DateTime::parse_from_rfc3339(&created_at_str)?.with_timezone(&Utc);
+            let updated_at = DateTime::parse_from_rfc3339(&updated_at_str)?.with_timezone(&Utc);
+            let last_transition = last_transition_str
+                .map(|s| DateTime::parse_from_rfc3339(&s).map(|dt| dt.with_timezone(&Utc)))
+                .transpose()?;
+
+            // Load emotion tags
+            let emotion_tags = self.load_emotion_tags(role_id)?;
+
+            Ok(Some(RoleProgress {
+                role_id: row.get(0)?,
+                current_scene_index: row.get::<_, i64>(1)? as usize,
+                total_scenes: row.get::<_, i64>(2)? as usize,
+                coherence: row.get(3)?,
+                last_transition,
+                consecutive_days: row.get::<_, i64>(5)? as u32,
+                created_at,
+                updated_at,
+                emotion_tags,
+            }))
+        } else {
+            Ok(None)
+        }
+    }
+
+    fn save_emotion_tag(&self, role_id: &str, emotion: &EmotionTag) -> Result<()> {
+        self.conn.execute(
+            "INSERT INTO emotion_tags(role_id, scene_id, tone, confidence, timestamp) VALUES(?1, ?2, ?3, ?4, ?5)",
+            params![
+                role_id,
+                emotion.scene_id,
+                emotion.tone,
+                emotion.confidence,
+                emotion.timestamp.to_rfc3339(),
+            ],
+        )?;
+        Ok(())
+    }
+
+    fn load_emotion_tags(&self, role_id: &str) -> Result<Vec<EmotionTag>> {
+        let mut stmt = self.conn.prepare(
+            "SELECT scene_id, tone, confidence, timestamp FROM emotion_tags WHERE role_id = ?1 ORDER BY timestamp ASC",
+        )?;
+
+        let rows = stmt.query_map(params![role_id], |row| {
+            let timestamp_str: String = row.get(3)?;
+            let timestamp = DateTime::parse_from_rfc3339(&timestamp_str)
+                .map_err(|e| rusqlite::Error::FromSqlConversionFailure(3, rusqlite::types::Type::Text, Box::new(e)))?
+                .with_timezone(&Utc);
+
+            Ok(EmotionTag {
+                scene_id: row.get(0)?,
+                tone: row.get(1)?,
+                confidence: row.get(2)?,
+                timestamp,
+            })
+        })?;
+
+        rows.collect::<Result<Vec<_>, _>>().map_err(Into::into)
+    }
+
+    // ========================================================================
+    // v1.1: Social Resonance
+    // ========================================================================
+
+    pub fn save_resonance_trace(&self, trace: &ResonanceTrace) -> Result<()> {
+        self.conn.execute(
+            "INSERT INTO resonance_traces(id, role_id, scene_id, message, created_at) VALUES(?1, ?2, ?3, ?4, ?5)",
+            params![
+                trace.id,
+                trace.role_id,
+                trace.scene_id,
+                trace.message,
+                trace.created_at.to_rfc3339(),
+            ],
+        )?;
+
+        // Save reflections
+        for reflection in &trace.reflections {
+            self.save_reflection(reflection)?;
+        }
+
+        Ok(())
+    }
+
+    pub fn load_resonance_trace(&self, trace_id: &str) -> Result<Option<ResonanceTrace>> {
+        let mut stmt = self.conn.prepare(
+            "SELECT id, role_id, scene_id, message, created_at FROM resonance_traces WHERE id = ?1",
+        )?;
+
+        let mut rows = stmt.query(params![trace_id])?;
+        if let Some(row) = rows.next()? {
+            let created_at_str: String = row.get(4)?;
+            let created_at = DateTime::parse_from_rfc3339(&created_at_str)?.with_timezone(&Utc);
+
+            let reflections = self.get_reflections_for_trace(trace_id)?;
+
+            Ok(Some(ResonanceTrace {
+                id: row.get(0)?,
+                role_id: row.get(1)?,
+                scene_id: row.get(2)?,
+                message: row.get(3)?,
+                created_at,
+                reflections,
+            }))
+        } else {
+            Ok(None)
+        }
+    }
+
+    pub fn get_recent_traces(&self, role_id: Option<&str>, limit: usize) -> Result<Vec<ResonanceTrace>> {
+        let mut query = "SELECT id, role_id, scene_id, message, created_at FROM resonance_traces".to_string();
+        let mut params_vec: Vec<Box<dyn rusqlite::ToSql>> = Vec::new();
+
+        if let Some(rid) = role_id {
+            query.push_str(" WHERE role_id = ?1");
+            params_vec.push(Box::new(rid.to_string()));
+        }
+        query.push_str(" ORDER BY created_at DESC LIMIT ?");
+        params_vec.push(Box::new(limit));
+
+        let mut stmt = self.conn.prepare(&query)?;
+        let params_refs: Vec<&dyn rusqlite::ToSql> =
+            params_vec.iter().map(|p| p.as_ref() as &dyn rusqlite::ToSql).collect();
+
+        let rows = stmt.query_map(params_refs.as_slice(), |row| {
+            let created_at_str: String = row.get(4)?;
+            let created_at = DateTime::parse_from_rfc3339(&created_at_str)
+                .map_err(|e| rusqlite::Error::FromSqlConversionFailure(4, rusqlite::types::Type::Text, Box::new(e)))?
+                .with_timezone(&Utc);
+
+            Ok((
+                row.get::<_, String>(0)?, // id
+                row.get::<_, String>(1)?, // role_id
+                row.get::<_, String>(2)?, // scene_id
+                row.get::<_, String>(3)?, // message
+                created_at,
+            ))
+        })?;
+
+        let mut traces = Vec::new();
+        for row_result in rows {
+            let (id, role_id, scene_id, message, created_at) = row_result?;
+            let reflections = self.get_reflections_for_trace(&id)?;
+            traces.push(ResonanceTrace {
+                id,
+                role_id,
+                scene_id,
+                message,
+                created_at,
+                reflections,
+            });
+        }
+
+        Ok(traces)
+    }
+
+    fn save_reflection(&self, reflection: &Reflection) -> Result<()> {
+        self.conn.execute(
+            "INSERT INTO reflections(trace_id, message, created_at) VALUES(?1, ?2, ?3)",
+            params![
+                reflection.trace_id,
+                reflection.message,
+                reflection.created_at.to_rfc3339(),
+            ],
+        )?;
+        Ok(())
+    }
+
+    pub fn get_reflections_for_trace(&self, trace_id: &str) -> Result<Vec<Reflection>> {
+        let mut stmt = self.conn.prepare(
+            "SELECT trace_id, message, created_at FROM reflections WHERE trace_id = ?1 ORDER BY created_at ASC",
+        )?;
+
+        let rows = stmt.query_map(params![trace_id], |row| {
+            let created_at_str: String = row.get(2)?;
+            let created_at = DateTime::parse_from_rfc3339(&created_at_str)
+                .map_err(|e| rusqlite::Error::FromSqlConversionFailure(2, rusqlite::types::Type::Text, Box::new(e)))?
+                .with_timezone(&Utc);
+
+            Ok(Reflection {
+                trace_id: row.get(0)?,
+                message: row.get(1)?,
+                created_at,
+            })
+        })?;
+
+        rows.collect::<Result<Vec<_>, _>>().map_err(Into::into)
     }
 }
 
