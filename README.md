@@ -41,43 +41,80 @@
 
 ### Технологии
 
-**Клиент:**
-- React Native (Expo) + TypeScript
-- Локальный YAML-контент → парсинг через js-yaml
-- STT/TTS: expo-speech + expo-av (MVP)
-- Хранилище: AsyncStorage (MVP) → позже Supabase/Neo4j
+**Ядро (Rust):**
+- Rust 1.75+ (логика, память, планировщик)
+- rusqlite (локальная БД для событий и фраз)
+- serde + serde_yaml (парсинг YAML-сценариев)
+- flutter_rust_bridge (FFI → Flutter)
+
+**UI (Flutter):**
+- Flutter 3.16+ (кроссплатформенный UI)
+- Dart 3.2+
+- flutter_tts + speech_to_text (голос)
+- shared_preferences (настройки)
+
+**Преимущества Rust:**
+- Низкая латентность для живого раннера шагов
+- Предсказуемая память без GC-провалов
+- Безопасность: одна точка истины для логики
+- Расширяемость: легко добавить SIMD, локальные модели, Whisper
 
 **Будущее:**
-- Realtime: WebSocket/Phoenix Channels или Supabase
-- БД: Postgres + pgvector/Weaviate для семантики, Neo4j для резонанса
-- ИИ: локальный TTS/STT + облачный LLM
+- Realtime: WebSocket/Phoenix Channels
+- Семантический поиск: Weaviate/pgvector
+- Локальные LLM: llama.cpp через Rust bindings
 
 ## 📦 Быстрый старт
 
 ### Установка
 
 ```bash
-# Установка зависимостей
-pnpm install
+# 1. Rust targets для мобильных платформ
+rustup target add aarch64-apple-ios x86_64-apple-ios aarch64-linux-android
+cargo install flutter_rust_bridge_codegen cargo-ndk
 
-# Запуск Expo Dev Server
-pnpm expo start
+# 2. Flutter зависимости
+cd app && flutter pub get
+
+# 3. Генерация FFI биндингов
+flutter_rust_bridge_codegen \
+  --rust-input ../core/src/api.rs \
+  --dart-output lib/bridge/bridge.generated.dart \
+  --dart-decl-output lib/bridge/bridge_definitions.dart
+
+# 4. Сборка Rust для Android
+cd ../core
+cargo ndk -t arm64-v8a -o ../app/android/app/src/main/jniLibs build --release
+
+# 5. Запуск Flutter
+cd ../app && flutter run
 ```
 
 ### Структура проекта
 
 ```
-app/                # React Native (Expo)
+core/               # Rust: бизнес-логика, retention-wave, хранилище
   src/
-    screens/        # Экраны: Warmup, Ping, Rinse, Home, Settings
-    components/     # UI компоненты
-    hooks/          # React hooks (useScriptRunner, useRetention)
-    lib/            # Бизнес-логика (scripts.ts, retention.ts)
-    data/           # YAML-сценарии
-  assets/           # Изображения, звуки
-server/             # (опционально) API/Realtime
+    scripts.rs      # Парсер YAML-сценариев
+    runner.rs       # Раннер шагов (state machine)
+    retention.rs    # Волновая память и планировщик
+    storage.rs      # SQLite (events, memory_links, sessions)
+    api.rs          # FFI граница для Flutter
+  Cargo.toml
+app/                # Flutter: UI и навигация
+  lib/
+    main.dart
+    screens/        # Home, Warmup, Ping, Rinse, Settings
+    bridge/         # Сгенерированные FFI биндинги
+  pubspec.yaml
+assets/
+  scripts/          # YAML-сценарии
+    morning-warmup-01.yaml
+    cafe-to-go-01.yaml
+    elevator-smalltalk-01.yaml
+    standup-update-01.yaml
+    pick-up-kid-kindergarten-01.yaml
 docs/               # Документация, гайды
-.env.example        # Пример конфигурации
 ```
 
 ## 📖 Как работают сценарии
@@ -88,7 +125,7 @@ docs/               # Документация, гайды
 - **Шаги**: listen, speak_check, contrast, apply_to_life
 - **Волновая репетиция**: параметры затухания и повторов
 
-Пример: `app/src/data/morning-warmup-01.yaml`
+Пример: `assets/scripts/morning-warmup-01.yaml`
 
 ## 📊 Метрики роста
 

@@ -1,0 +1,53 @@
+name: liminal_english
+description: Context-aware English learning through micro-scenarios
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # UI
+  cupertino_icons: ^1.0.2
+
+  # FFI Bridge (will be generated)
+  # flutter_rust_bridge: ^2.0.0
+  ffi: ^2.1.0
+
+  # State Management
+  provider: ^6.1.1
+
+  # Storage
+  shared_preferences: ^2.2.2
+  path_provider: ^2.1.2
+
+  # Notifications
+  flutter_local_notifications: ^16.3.2
+
+  # Voice
+  flutter_tts: ^4.0.2
+  speech_to_text: ^6.6.0
+  record: ^5.0.4
+
+  # Utils
+  intl: ^0.19.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/scripts/
+    - assets/images/
+    - assets/sounds/
+
+flutter_rust_bridge:
+  rust_input: ../core/src/api.rs
+  dart_output: lib/bridge/bridge.generated.dart

@@ -1,0 +1,38 @@
+id: standup-update-01
+title: "Stand-up Update"
+description: "Give your daily status update in a clear, concise way"
+context_triggers:
+  time: morning
+  location: work
+  duration_max_sec: 180
+goals:
+  - "Structure your update clearly (yesterday, today, blockers)"
+  - "Use past and present continuous correctly"
+  - "Be concise and team-focused"
+steps:
+  - type: listen
+    prompt: "Listen to a typical stand-up update:"
+    content: "Yesterday I finished the API integration. Today I'm working on the UI tests. No blockers."
+
+  - type: speak_check
+    prompt: "Give your update:"
+    content: "Yesterday I completed the user authentication. Today I'm implementing the dashboard. No blockers."
+    ref_text: "Yesterday I completed the user authentication today I'm implementing the dashboard no blockers"
+    hints:
+      - "Use past simple for completed work: 'I finished', 'I completed'"
+      - "Use present continuous for ongoing: 'I'm working on', 'I'm implementing'"
+
+  - type: contrast
+    prompt: "Which structure is clearer?"
+    answers:
+      - "Yesterday I finished X. Today I'm working on Y. No blockers."
+      - "I'm doing lots of things and yesterday was busy too."
+      - "Yesterday: X. Today: Y. Blockers: None."
+
+  - type: apply_to_life
+    prompt: "Practice your real stand-up update for today"
+
+rehearsal:
+  decay_alpha: 0.85
+  next_ping_sec_min: 300
+  next_ping_sec_max: 86400

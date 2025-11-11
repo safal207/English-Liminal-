@@ -1,0 +1,38 @@
+id: pick-up-kid-kindergarten-01
+title: "Picking Up Kid from Kindergarten"
+description: "Common phrases for communicating with teachers and your child"
+context_triggers:
+  time: afternoon
+  location: kindergarten
+  duration_max_sec: 180
+goals:
+  - "Greet the teacher naturally"
+  - "Ask about your child's day"
+  - "Encourage your child to speak English"
+steps:
+  - type: listen
+    prompt: "Listen to a typical pick-up conversation:"
+    content: "Hi! How was his day? Did he eat well? Thanks, see you tomorrow!"
+
+  - type: speak_check
+    prompt: "Greet the teacher:"
+    content: "Hi! How was her day today?"
+    ref_text: "Hi how was her day today"
+    hints:
+      - "Friendly but quick - teachers are busy"
+      - "'How was his/her day?' is the most common question"
+
+  - type: contrast
+    prompt: "What's the most natural greeting?"
+    answers:
+      - "Hi! How was his day?"
+      - "Good afternoon. I would like to inquire about my child's daily activities."
+      - "Hey! Everything okay?"
+
+  - type: apply_to_life
+    prompt: "Practice asking your child about their day in English"
+
+rehearsal:
+  decay_alpha: 0.88
+  next_ping_sec_min: 180
+  next_ping_sec_max: 14400
