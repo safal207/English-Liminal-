@@ -15,6 +15,6 @@ pub use roles::{
     Role, RoleCoherenceScore, RolePath, RoleProgress,
 };
 pub use runner::RunnerState;
-pub use scripts::{Rehearsal, Script, Step, StepType};
+pub use scripts::{Answer, Rehearsal, Script, Step, StepType};
 pub use storage::Store;
 pub use validator::{ContentValidator, ValidationReport};

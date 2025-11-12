@@ -10,6 +10,42 @@ pub enum StepType {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum Answer {
+    Simple(String),
+    Rich {
+        text: String,
+        #[serde(default)]
+        correct: bool,
+        #[serde(default)]
+        explanation: Option<String>,
+    },
+}
+
+impl Answer {
+    pub fn text(&self) -> &str {
+        match self {
+            Answer::Simple(s) => s,
+            Answer::Rich { text, .. } => text,
+        }
+    }
+
+    pub fn is_correct(&self) -> bool {
+        match self {
+            Answer::Simple(_) => false,
+            Answer::Rich { correct, .. } => *correct,
+        }
+    }
+
+    pub fn explanation(&self) -> Option<&str> {
+        match self {
+            Answer::Simple(_) => None,
+            Answer::Rich { explanation, .. } => explanation.as_deref(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Step {
     pub r#type: StepType,
     pub prompt: String,
@@ -18,7 +54,9 @@ pub struct Step {
     #[serde(default)]
     pub ref_text: Option<String>,
     #[serde(default)]
-    pub answers: Option<Vec<String>>,
+    pub question: Option<String>,
+    #[serde(default)]
+    pub answers: Option<Vec<Answer>>,
     #[serde(default)]
     pub hints: Option<Vec<String>>,
 }
