@@ -1,7 +1,7 @@
 use anyhow::{anyhow, Result};
 use std::collections::{HashMap, HashSet};
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 use crate::roles::Role;
 use crate::scripts::Script;
@@ -62,6 +62,12 @@ impl ValidationReport {
         } else {
             println!("❌ Validation failed with {} errors", self.errors.len());
         }
+    }
+}
+
+impl Default for ValidationReport {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -202,7 +208,7 @@ impl ContentValidator {
     fn validate_script(&self, script: &Script, report: &mut ValidationReport) {
         // Check required fields
         if script.id.is_empty() {
-            report.add_error(format!("Script has empty ID"));
+            report.add_error("Script has empty ID".to_string());
         }
 
         if script.title.is_empty() {
@@ -236,7 +242,7 @@ impl ContentValidator {
     fn validate_role(&self, role: &Role, report: &mut ValidationReport) {
         // Check required fields
         if role.id.is_empty() {
-            report.add_error(format!("Role has empty ID"));
+            report.add_error("Role has empty ID".to_string());
         }
 
         if role.title.is_empty() {
@@ -269,6 +275,12 @@ impl ContentValidator {
                 }
             }
         }
+    }
+}
+
+impl Default for ContentValidator {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

@@ -1,3 +1,5 @@
+#![allow(unexpected_cfgs)]
+
 mod retention;
 mod roles;
 mod runner;

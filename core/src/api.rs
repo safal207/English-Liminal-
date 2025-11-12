@@ -6,7 +6,10 @@ use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
 
-use crate::roles::{liminal_transition, EmotionTag, Reflection, ResonanceTrace, Role, RoleCoherenceScore, RoleProgress};
+use crate::roles::{
+    liminal_transition, EmotionTag, Reflection, ResonanceTrace, Role, RoleCoherenceScore,
+    RoleProgress,
+};
 use crate::runner::RunnerState;
 use crate::scripts::Script;
 use crate::storage::Store;
@@ -130,14 +133,18 @@ pub fn init_storage(db_path: String) -> Result<(), String> {
 #[frb(sync)]
 pub fn add_event(kind: String, payload: String) -> Result<(), String> {
     let guard = STORE.lock();
-    let store = guard.as_ref().ok_or_else(|| "Storage not initialized".to_string())?;
+    let store = guard
+        .as_ref()
+        .ok_or_else(|| "Storage not initialized".to_string())?;
     store.add_event(&kind, &payload).map_err(|e| e.to_string())
 }
 
 #[frb(sync)]
 pub fn get_events(kind: Option<String>, limit: u32) -> Result<String, String> {
     let guard = STORE.lock();
-    let store = guard.as_ref().ok_or_else(|| "Storage not initialized".to_string())?;
+    let store = guard
+        .as_ref()
+        .ok_or_else(|| "Storage not initialized".to_string())?;
     let events = store
         .get_events(kind.as_deref(), limit as usize)
         .map_err(|e| e.to_string())?;
@@ -147,7 +154,9 @@ pub fn get_events(kind: Option<String>, limit: u32) -> Result<String, String> {
 #[frb(sync)]
 pub fn export_data() -> Result<String, String> {
     let guard = STORE.lock();
-    let store = guard.as_ref().ok_or_else(|| "Storage not initialized".to_string())?;
+    let store = guard
+        .as_ref()
+        .ok_or_else(|| "Storage not initialized".to_string())?;
     store.export_json().map_err(|e| e.to_string())
 }
 
@@ -158,14 +167,18 @@ pub fn export_data() -> Result<String, String> {
 #[frb(sync)]
 pub fn get_streak() -> Result<u32, String> {
     let guard = STORE.lock();
-    let store = guard.as_ref().ok_or_else(|| "Storage not initialized".to_string())?;
+    let store = guard
+        .as_ref()
+        .ok_or_else(|| "Storage not initialized".to_string())?;
     store.get_streak().map_err(|e| e.to_string())
 }
 
 #[frb(sync)]
 pub fn get_use_in_wild_count() -> Result<u32, String> {
     let guard = STORE.lock();
-    let store = guard.as_ref().ok_or_else(|| "Storage not initialized".to_string())?;
+    let store = guard
+        .as_ref()
+        .ok_or_else(|| "Storage not initialized".to_string())?;
     store.get_use_in_wild_count().map_err(|e| e.to_string())
 }
 
@@ -245,8 +258,12 @@ pub fn calculate_role_coherence(
 pub fn start_role_progress(role_id: String, total_scenes: u32) -> Result<String, String> {
     let progress = RoleProgress::new(role_id, total_scenes as usize);
     let guard = STORE.lock();
-    let store = guard.as_ref().ok_or_else(|| "Storage not initialized".to_string())?;
-    store.save_role_progress(&progress).map_err(|e| e.to_string())?;
+    let store = guard
+        .as_ref()
+        .ok_or_else(|| "Storage not initialized".to_string())?;
+    store
+        .save_role_progress(&progress)
+        .map_err(|e| e.to_string())?;
     serde_json::to_string(&progress).map_err(|e| e.to_string())
 }
 
@@ -258,7 +275,9 @@ pub fn complete_scene_with_emotion(
     confidence: f32,
 ) -> Result<String, String> {
     let guard = STORE.lock();
-    let store = guard.as_ref().ok_or_else(|| "Storage not initialized".to_string())?;
+    let store = guard
+        .as_ref()
+        .ok_or_else(|| "Storage not initialized".to_string())?;
 
     let mut progress = store
         .load_role_progress(&role_id)
@@ -268,14 +287,18 @@ pub fn complete_scene_with_emotion(
     let emotion = EmotionTag::new(scene_id, tone, confidence);
     progress.complete_scene(emotion);
 
-    store.save_role_progress(&progress).map_err(|e| e.to_string())?;
+    store
+        .save_role_progress(&progress)
+        .map_err(|e| e.to_string())?;
     serde_json::to_string(&progress).map_err(|e| e.to_string())
 }
 
 #[frb(sync)]
 pub fn get_role_progress_json(role_id: String) -> Result<String, String> {
     let guard = STORE.lock();
-    let store = guard.as_ref().ok_or_else(|| "Storage not initialized".to_string())?;
+    let store = guard
+        .as_ref()
+        .ok_or_else(|| "Storage not initialized".to_string())?;
 
     let progress = store
         .load_role_progress(&role_id)
@@ -288,7 +311,9 @@ pub fn get_role_progress_json(role_id: String) -> Result<String, String> {
 #[frb(sync)]
 pub fn get_liminal_transition_json(role_id: String) -> Result<String, String> {
     let guard = STORE.lock();
-    let store = guard.as_ref().ok_or_else(|| "Storage not initialized".to_string())?;
+    let store = guard
+        .as_ref()
+        .ok_or_else(|| "Storage not initialized".to_string())?;
 
     let progress = store
         .load_role_progress(&role_id)
@@ -307,7 +332,9 @@ pub fn get_liminal_transition_json(role_id: String) -> Result<String, String> {
 #[frb(sync)]
 pub fn update_consecutive_days(role_id: String, days: u32) -> Result<String, String> {
     let guard = STORE.lock();
-    let store = guard.as_ref().ok_or_else(|| "Storage not initialized".to_string())?;
+    let store = guard
+        .as_ref()
+        .ok_or_else(|| "Storage not initialized".to_string())?;
 
     let mut progress = store
         .load_role_progress(&role_id)
@@ -317,7 +344,9 @@ pub fn update_consecutive_days(role_id: String, days: u32) -> Result<String, Str
     progress.consecutive_days = days;
     progress.calculate_coherence();
 
-    store.save_role_progress(&progress).map_err(|e| e.to_string())?;
+    store
+        .save_role_progress(&progress)
+        .map_err(|e| e.to_string())?;
     serde_json::to_string(&progress).map_err(|e| e.to_string())
 }
 
@@ -334,15 +363,21 @@ pub fn create_resonance_trace(
 ) -> Result<String, String> {
     let trace = ResonanceTrace::new(trace_id, role_id, scene_id, message);
     let guard = STORE.lock();
-    let store = guard.as_ref().ok_or_else(|| "Storage not initialized".to_string())?;
-    store.save_resonance_trace(&trace).map_err(|e| e.to_string())?;
+    let store = guard
+        .as_ref()
+        .ok_or_else(|| "Storage not initialized".to_string())?;
+    store
+        .save_resonance_trace(&trace)
+        .map_err(|e| e.to_string())?;
     serde_json::to_string(&trace).map_err(|e| e.to_string())
 }
 
 #[frb(sync)]
 pub fn add_reflection_to_trace(trace_id: String, message: String) -> Result<String, String> {
     let guard = STORE.lock();
-    let store = guard.as_ref().ok_or_else(|| "Storage not initialized".to_string())?;
+    let store = guard
+        .as_ref()
+        .ok_or_else(|| "Storage not initialized".to_string())?;
 
     let mut trace = store
         .load_resonance_trace(&trace_id)
@@ -352,14 +387,18 @@ pub fn add_reflection_to_trace(trace_id: String, message: String) -> Result<Stri
     let reflection = Reflection::new(trace_id.clone(), message);
     trace.add_reflection(reflection);
 
-    store.save_resonance_trace(&trace).map_err(|e| e.to_string())?;
+    store
+        .save_resonance_trace(&trace)
+        .map_err(|e| e.to_string())?;
     serde_json::to_string(&trace).map_err(|e| e.to_string())
 }
 
 #[frb(sync)]
 pub fn get_recent_traces_json(role_id: Option<String>, limit: u32) -> Result<String, String> {
     let guard = STORE.lock();
-    let store = guard.as_ref().ok_or_else(|| "Storage not initialized".to_string())?;
+    let store = guard
+        .as_ref()
+        .ok_or_else(|| "Storage not initialized".to_string())?;
 
     let traces = store
         .get_recent_traces(role_id.as_deref(), limit as usize)
@@ -371,7 +410,9 @@ pub fn get_recent_traces_json(role_id: Option<String>, limit: u32) -> Result<Str
 #[frb(sync)]
 pub fn get_trace_json(trace_id: String) -> Result<String, String> {
     let guard = STORE.lock();
-    let store = guard.as_ref().ok_or_else(|| "Storage not initialized".to_string())?;
+    let store = guard
+        .as_ref()
+        .ok_or_else(|| "Storage not initialized".to_string())?;
 
     let trace = store
         .load_resonance_trace(&trace_id)
