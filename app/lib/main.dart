@@ -10,6 +10,10 @@ import 'screens/ping.dart';
 import 'screens/rinse.dart';
 import 'screens/settings.dart';
 
+// v1.1 Screens
+import 'screens/v1_1/waves_screen.dart';
+import 'screens/v1_1/metrics_dashboard.dart';
+
 // Services (will be implemented with FFI bridge)
 // import 'bridge/bridge.generated.dart' as native;
 
@@ -72,9 +76,9 @@ class _MainNavigatorState extends State<MainNavigator> {
 
   final List<Widget> _screens = const [
     HomeScreen(),
-    WarmupScreen(),
+    MetricsDashboard(), // v1.1: RoleFlow + EmotionBalance + JoyWave + SocialEcho
+    WavesScreen(), // v1.1: Social Resonance
     PingScreen(),
-    RinseScreen(),
     SettingsScreen(),
   ];
 
@@ -97,16 +101,16 @@ class _MainNavigatorState extends State<MainNavigator> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.wb_sunny),
-            label: 'Warmup',
+            icon: Icon(Icons.auto_graph), // v1.1: Metrics Dashboard
+            label: 'Journey',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.waves), // v1.1: Social Resonance
+            label: 'Waves',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.notifications_active),
             label: 'Ping',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.nightlight_round),
-            label: 'Rinse',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),

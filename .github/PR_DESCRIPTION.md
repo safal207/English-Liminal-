@@ -127,7 +127,100 @@ transition_message: "You've taken the first step into your role..."
 
 ---
 
-### 3. Documentation
+### 3. Flutter UI (Sprint 4: UI Alchemy)
+**Files:** `app/lib/screens/v1_1/`, `app/lib/widgets/v1_1/`, `app/lib/services/v1_1_api_service.dart`
+
+#### New Screens:
+
+##### 🌊 Waves Screen
+**File:** `waves_screen.dart` (~420 lines)
+- Social resonance feed with anonymous ResonanceTrace messages
+- Pulsating wave cards with ScaleTransition (2s loop)
+- Role-specific icons and color coding
+- Tap to reflect: dialog for adding reflections
+- Timeline display (2h ago, 1d ago, etc.)
+- Gradient background (blue → green)
+
+##### 📊 Metrics Dashboard
+**File:** `metrics_dashboard.dart` (~620 lines)
+- **RoleFlow Card**: Progress bar with completion stats, streak counter, consistency multiplier
+- **EmotionBalance Card**: Confidence ratio visualization with dual progress bars
+- **SocialEcho Card**: Traces sent + reflections received counter
+- **JoyWave Card**: Trend graph with spontaneous returns + positive emotions
+- **Insights Section**: AI-generated encouragement based on metrics
+- Responsive SliverAppBar with gradient header
+- Scrollable layout with card elevation
+
+#### New Widgets:
+
+##### 🌀 Liminal Transition
+**File:** `liminal_transition.dart` (~380 lines)
+- 2.5s fullscreen animation: spiral → sphere morphing
+- Custom `SpiralSpherePainter` with CustomPaint
+  - Spiral phase (0.0-0.6): expanding spiral with particles
+  - Sphere phase (0.6-1.0): morphing to pulsing sphere
+- Color gradient animation: #4A90E2 (blue) → #7ED321 (green)
+- Coherence progress bar with smooth interpolation
+- Fade-in transition message
+- Usage: `LiminalTransition.show(context: context, message: "...")`
+
+##### 🎤 Emotion Feedback
+**File:** `emotion_feedback.dart` (~420 lines)
+- Real-time pulsating circle with color-coded feedback:
+  - 🟢 Green (#7ED321): Calm, Confident, Clear
+  - 🟡 Amber (#F5A623): Nervous, Uncertain, Rushed
+  - 🔵 Blue (#4A90E2): Neutral
+- Pulse speed varies by tone (400-1200ms)
+- Icon changes per emotion (spa, star, warning, bolt, etc.)
+- **EmotionHistoryBar**: Timeline of recent emotion tags as colored dots
+- **EmotionBalanceIndicator**: Dual progress bar (confident vs nervous)
+
+##### 📈 Wave Amplitude Graph
+**File:** `wave_amplitude_graph.dart` (~480 lines)
+- Animated smooth bezier curve chart
+- Gradient fill under wave path
+- Data point markers (5px circles with white centers)
+- **JoyWaveCard**: Comprehensive engagement card
+  - Large score display
+  - Breakdown: spontaneous returns + positive emotions
+  - Trend indicator (up/down/stable)
+  - 7-day sparkline history
+  - Gradient background with card elevation
+- **Sparkline**: Compact mini-chart for inline trends
+
+#### Services:
+
+##### 🔌 V1.1 API Service
+**File:** `v1_1_api_service.dart` (~220 lines)
+- FFI bridge wrapper for all 8 v1.1 Rust APIs
+- Data models with `fromJson` factories:
+  - `RoleProgressModel`: includes calculated `roleFlow` and `emotionBalance` properties
+  - `EmotionTagModel`
+  - `LiminalTransitionModel`
+  - `ResonanceTraceModel` + `ReflectionModel`
+- TODO markers for FFI integration (when `flutter_rust_bridge` generates bindings)
+- Mock data structure ready for testing
+
+#### UI/UX Features:
+- **Animations**: ScaleTransition, CustomPainter morphing, CurvedAnimation, Tween
+- **Gradients**: Liminal theme (blue → green) throughout
+- **Material Design 3**: Elevated cards, rounded corners (16px), shadows
+- **Responsive**: SliverAppBar, scrollable layouts, flexible rows
+- **Accessibility**: Tooltips, semantic labels, WCAG color contrast
+- **Performance**: CustomPainter for complex graphics, const constructors
+
+#### Navigation Integration:
+**File:** `app/lib/main.dart` (updated)
+- Bottom navigation now includes:
+  1. 🏠 Home
+  2. 📊 Journey (MetricsDashboard) — replaces "Warmup"
+  3. 🌊 Waves (WavesScreen) — replaces "Rinse"
+  4. 🔔 Ping (notifications)
+  5. ⚙️ Settings
+
+---
+
+### 4. Documentation
 **Files:** `docs/V1.1_FLOW.md`
 
 - Complete visual specification with ASCII flow diagrams
@@ -154,22 +247,45 @@ cargo test --lib
 
 ## 📊 Stats
 
-- **Rust LOC:** +1,001 (roles.rs +270, storage.rs +476, api.rs +155, lib.rs +4)
-- **Content:** 13 scenarios, 4 role tracks, ~6,000 words
-- **YAML files:** 17 (13 scenes + 4 manifests)
-- **New database tables:** 4 (role_progress, emotion_tags, resonance_traces, reflections)
+**Backend (Rust):**
+- **LOC:** +1,001 (roles.rs +270, storage.rs +476, api.rs +155, lib.rs +4)
+- **Database tables:** 4 new (role_progress, emotion_tags, resonance_traces, reflections)
 - **FFI functions:** 8 new v1.1 APIs
-- **Tests:** 13/13 passing
+- **Tests:** 13/13 passing ✅
+
+**Content (YAML):**
+- **Scenarios:** 13 complete scenes across 4 role tracks
+- **Words:** ~6,000 (dialogues, goals, contexts)
+- **Files:** 17 (13 scenes + 4 role manifests)
+
+**Frontend (Flutter):**
+- **LOC:** +2,522 (screens +1,040, widgets +1,280, services +220)
+- **Screens:** 2 new (WavesScreen, MetricsDashboard)
+- **Widgets:** 3 new (LiminalTransition, EmotionFeedback, WaveAmplitudeGraph)
+- **Components:** 15+ sub-widgets (cards, indicators, painters)
+- **Files:** 6 new + 1 updated (main.dart navigation)
+
+**Total v1.1:**
+- **Commits:** 5 (MVP → Core → Content → PR desc → UI → Navigation)
+- **Files changed:** ~30
+- **Lines added:** ~4,350 (Rust + YAML + Flutter)
+- **Duration:** 6-week sprint (Sprint 1-4 complete)
 
 ---
 
-## 🚀 Next Steps (Sprint 4: UI Alchemy)
+## 🚀 Ready for Integration
 
-- [ ] Waves Screen — visualize ResonanceTrace (pulsating waves)
-- [ ] Liminal Transition Animation — spiral → sphere transitions
-- [ ] Emotion Color Feedback — real-time voice tone visualization
-- [ ] Wave Amplitude Graph — JoyWave engagement metrics
-- [ ] Dashboard Metrics — RoleFlow + EmotionBalance UI
+**v1.1 is feature-complete!** All 4 sprints finished:
+- ✅ Sprint 1-2: Rust Core (RoleProgress, EmotionTag, ResonanceTrace, storage, FFI)
+- ✅ Sprint 3: Content (13 YAML scenarios, 4 role tracks with emotional arcs)
+- ✅ Sprint 4: Flutter UI (Waves, Dashboard, Transitions, Emotion feedback, graphs)
+
+**Next steps for deployment:**
+1. Generate FFI bindings: `flutter_rust_bridge_codegen generate`
+2. Integrate Whisper/STT for emotion detection
+3. Add backend API for ResonanceTrace sync (optional for v1.1 soft launch)
+4. TestFlight/Play Beta deployment
+5. Onboard 50 beta testers
 
 ---
 

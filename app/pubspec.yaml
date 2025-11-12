@@ -13,8 +13,8 @@ dependencies:
   # UI
   cupertino_icons: ^1.0.2
 
-  # FFI Bridge (will be generated)
-  # flutter_rust_bridge: ^2.0.0
+  # FFI Bridge
+  flutter_rust_bridge: ^2.0.0
   ffi: ^2.1.0
 
   # State Management
