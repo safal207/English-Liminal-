@@ -3,6 +3,7 @@ mod roles;
 mod runner;
 mod scripts;
 mod storage;
+pub mod validator;
 
 // Export FFI API
 pub mod api;
@@ -14,5 +15,6 @@ pub use roles::{
     Role, RoleCoherenceScore, RolePath, RoleProgress,
 };
 pub use runner::RunnerState;
-pub use scripts::{Rehearsal, Script, Step, StepType};
+pub use scripts::{Answer, Rehearsal, Script, Step, StepType};
 pub use storage::Store;
+pub use validator::{ContentValidator, ValidationReport};

@@ -13,9 +13,13 @@ pub struct Role {
     pub id: String,
     pub title: String,
     pub description: String,
-    pub goal: String,
+    #[serde(default)]
+    pub goal: Option<String>,
+    #[serde(default)]
     pub icon: Option<String>,
+    #[serde(default)]
     pub benchmarks: Vec<String>,
+    #[serde(default, alias = "scenes")]
     pub scenario_ids: Vec<String>,
     #[serde(default)]
     pub difficulty: Difficulty,
