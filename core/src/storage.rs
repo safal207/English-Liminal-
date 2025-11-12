@@ -540,4 +540,164 @@ mod tests {
         assert_eq!(loaded.phrase, "test phrase");
         assert_eq!(loaded.decay_alpha, 0.8);
     }
+
+    #[test]
+    fn test_role_progress_save_load() {
+        let store = Store::open(":memory:").unwrap();
+        let progress = RoleProgress::new("qa_abroad".to_string(), 5);
+
+        store.save_role_progress(&progress).unwrap();
+        let loaded = store.load_role_progress("qa_abroad").unwrap();
+
+        assert!(loaded.is_some());
+        let loaded = loaded.unwrap();
+        assert_eq!(loaded.role_id, "qa_abroad");
+        assert_eq!(loaded.total_scenes, 5);
+        assert_eq!(loaded.current_scene_index, 0);
+        assert_eq!(loaded.coherence, 0.0);
+    }
+
+    #[test]
+    fn test_role_progress_with_emotions() {
+        let store = Store::open(":memory:").unwrap();
+        let mut progress = RoleProgress::new("qa_abroad".to_string(), 5);
+
+        let emotion1 = EmotionTag::new("scene1".to_string(), "Calm".to_string(), 0.85);
+        let emotion2 = EmotionTag::new("scene2".to_string(), "Confident".to_string(), 0.92);
+        progress.complete_scene(emotion1);
+        progress.complete_scene(emotion2);
+
+        store.save_role_progress(&progress).unwrap();
+        let loaded = store.load_role_progress("qa_abroad").unwrap();
+
+        assert!(loaded.is_some());
+        let loaded = loaded.unwrap();
+        assert_eq!(loaded.emotion_tags.len(), 2);
+        assert_eq!(loaded.emotion_tags[0].tone, "Calm");
+        assert_eq!(loaded.emotion_tags[1].tone, "Confident");
+        assert_eq!(loaded.current_scene_index, 2);
+    }
+
+    #[test]
+    fn test_role_progress_update() {
+        let store = Store::open(":memory:").unwrap();
+        let mut progress = RoleProgress::new("qa_abroad".to_string(), 5);
+
+        store.save_role_progress(&progress).unwrap();
+
+        progress.current_scene_index = 3;
+        progress.coherence = 0.6;
+        progress.consecutive_days = 7;
+
+        store.save_role_progress(&progress).unwrap();
+        let loaded = store.load_role_progress("qa_abroad").unwrap().unwrap();
+
+        assert_eq!(loaded.current_scene_index, 3);
+        assert_eq!(loaded.coherence, 0.6);
+        assert_eq!(loaded.consecutive_days, 7);
+    }
+
+    #[test]
+    fn test_resonance_trace_save_load() {
+        let store = Store::open(":memory:").unwrap();
+        let trace = ResonanceTrace::new(
+            "trace1".to_string(),
+            "qa_abroad".to_string(),
+            "scene1".to_string(),
+            "Felt nervous but pushed through!".to_string(),
+        );
+
+        store.save_resonance_trace(&trace).unwrap();
+        let loaded = store.load_resonance_trace("trace1").unwrap();
+
+        assert!(loaded.is_some());
+        let loaded = loaded.unwrap();
+        assert_eq!(loaded.id, "trace1");
+        assert_eq!(loaded.role_id, "qa_abroad");
+        assert_eq!(loaded.message, "Felt nervous but pushed through!");
+        assert_eq!(loaded.reflections.len(), 0);
+    }
+
+    #[test]
+    fn test_resonance_trace_with_reflections() {
+        let store = Store::open(":memory:").unwrap();
+        let mut trace = ResonanceTrace::new(
+            "trace1".to_string(),
+            "qa_abroad".to_string(),
+            "scene1".to_string(),
+            "Felt nervous but pushed through!".to_string(),
+        );
+
+        let reflection1 = Reflection::new("trace1".to_string(), "Same here!".to_string());
+        let reflection2 = Reflection::new("trace1".to_string(), "Keep going!".to_string());
+        trace.add_reflection(reflection1);
+        trace.add_reflection(reflection2);
+
+        store.save_resonance_trace(&trace).unwrap();
+        let loaded = store.load_resonance_trace("trace1").unwrap().unwrap();
+
+        assert_eq!(loaded.reflections.len(), 2);
+        assert_eq!(loaded.reflections[0].message, "Same here!");
+        assert_eq!(loaded.reflections[1].message, "Keep going!");
+    }
+
+    #[test]
+    fn test_get_recent_traces() {
+        let store = Store::open(":memory:").unwrap();
+
+        let trace1 = ResonanceTrace::new(
+            "trace1".to_string(),
+            "qa_abroad".to_string(),
+            "scene1".to_string(),
+            "Message 1".to_string(),
+        );
+        let trace2 = ResonanceTrace::new(
+            "trace2".to_string(),
+            "qa_abroad".to_string(),
+            "scene2".to_string(),
+            "Message 2".to_string(),
+        );
+        let trace3 = ResonanceTrace::new(
+            "trace3".to_string(),
+            "visa_journey".to_string(),
+            "scene1".to_string(),
+            "Message 3".to_string(),
+        );
+
+        store.save_resonance_trace(&trace1).unwrap();
+        store.save_resonance_trace(&trace2).unwrap();
+        store.save_resonance_trace(&trace3).unwrap();
+
+        let all_traces = store.get_recent_traces(None, 10).unwrap();
+        assert_eq!(all_traces.len(), 3);
+
+        let qa_traces = store.get_recent_traces(Some("qa_abroad"), 10).unwrap();
+        assert_eq!(qa_traces.len(), 2);
+
+        let limited_traces = store.get_recent_traces(None, 2).unwrap();
+        assert_eq!(limited_traces.len(), 2);
+    }
+
+    #[test]
+    fn test_emotion_tags_per_role() {
+        let store = Store::open(":memory:").unwrap();
+
+        let mut progress1 = RoleProgress::new("qa_abroad".to_string(), 3);
+        progress1.complete_scene(EmotionTag::new("s1".to_string(), "Calm".to_string(), 0.8));
+        progress1.complete_scene(EmotionTag::new("s2".to_string(), "Confident".to_string(), 0.9));
+
+        let mut progress2 = RoleProgress::new("visa_journey".to_string(), 2);
+        progress2.complete_scene(EmotionTag::new("s1".to_string(), "Nervous".to_string(), 0.7));
+
+        store.save_role_progress(&progress1).unwrap();
+        store.save_role_progress(&progress2).unwrap();
+
+        let loaded1 = store.load_role_progress("qa_abroad").unwrap().unwrap();
+        let loaded2 = store.load_role_progress("visa_journey").unwrap().unwrap();
+
+        assert_eq!(loaded1.emotion_tags.len(), 2);
+        assert_eq!(loaded2.emotion_tags.len(), 1);
+        assert_eq!(loaded1.emotion_tags[0].tone, "Calm");
+        assert_eq!(loaded2.emotion_tags[0].tone, "Nervous");
+    }
 }

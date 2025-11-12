@@ -131,4 +131,154 @@ mod tests {
 
         assert!(delay_low < delay_high);
     }
+
+    #[test]
+    fn test_weaken() {
+        let mut link = MemoryLink::new("test".to_string(), 0.8);
+        link.wave = 0.5;
+        let now = Utc::now();
+
+        link.weaken(now);
+
+        // Wave should be reduced by decay_alpha
+        assert_eq!(link.wave, 0.4); // 0.5 * 0.8
+        assert_eq!(link.fail_count, 1);
+        assert_eq!(link.last_seen, now);
+    }
+
+    #[test]
+    fn test_mark_used_in_wild() {
+        let mut link = MemoryLink::new("test".to_string(), 0.8);
+        link.wave = 0.5;
+        let now = Utc::now();
+
+        link.mark_used_in_wild(now);
+
+        assert_eq!(link.wave, 0.7); // 0.5 + 0.2
+        assert_eq!(link.use_in_wild_count, 1);
+        assert_eq!(link.last_seen, now);
+    }
+
+    #[test]
+    fn test_mark_used_in_wild_cap() {
+        let mut link = MemoryLink::new("test".to_string(), 0.8);
+        link.wave = 0.95;
+
+        link.mark_used_in_wild(Utc::now());
+
+        // Should be capped at 1.0
+        assert_eq!(link.wave, 1.0);
+    }
+
+    #[test]
+    fn test_decay_alpha_clamping() {
+        let link_low = MemoryLink::new("test".to_string(), 0.5);
+        let link_high = MemoryLink::new("test".to_string(), 1.0);
+
+        // Should be clamped to 0.7-0.9 range
+        assert_eq!(link_low.decay_alpha, 0.7);
+        assert_eq!(link_high.decay_alpha, 0.9);
+    }
+
+    #[test]
+    fn test_wave_clamping() {
+        let mut link = MemoryLink::new("test".to_string(), 0.8);
+
+        // Test upper bound
+        link.reinforce(Utc::now(), 2.0);
+        assert_eq!(link.wave, 1.0);
+
+        // Test lower bound through decay
+        link.wave = 0.01;
+        link.weaken(Utc::now());
+        assert!(link.wave >= 0.0);
+        assert!(link.wave <= 1.0);
+    }
+
+    #[test]
+    fn test_calculate_priority_low_wave() {
+        let mut link = MemoryLink::new("test".to_string(), 0.8);
+        link.wave = 0.1; // Low wave = high priority
+
+        let priority = calculate_priority(&link, Utc::now());
+
+        // Should be high priority (closer to 1.0)
+        assert!(priority > 0.5);
+    }
+
+    #[test]
+    fn test_calculate_priority_high_wave() {
+        let mut link = MemoryLink::new("test".to_string(), 0.8);
+        link.wave = 0.9; // High wave = low priority
+
+        let priority = calculate_priority(&link, Utc::now());
+
+        // Should be low priority (closer to 0.0)
+        assert!(priority < 0.5);
+    }
+
+    #[test]
+    fn test_calculate_priority_time_boost() {
+        let mut link = MemoryLink::new("test".to_string(), 0.8);
+        link.wave = 0.5;
+
+        // Set last_seen to 7 days ago
+        link.last_seen = Utc::now() - chrono::Duration::days(7);
+
+        let priority = calculate_priority(&link, Utc::now());
+
+        // Should have time boost applied
+        assert!(priority > 0.5);
+    }
+
+    #[test]
+    fn test_calculate_priority_wild_boost() {
+        let mut link = MemoryLink::new("test".to_string(), 0.8);
+        link.wave = 0.5;
+        link.use_in_wild_count = 5; // Max boost
+
+        let priority = calculate_priority(&link, Utc::now());
+
+        // Should have wild boost applied
+        assert!(priority > 0.5);
+    }
+
+    #[test]
+    fn test_tick_no_time_passed() {
+        let mut link = MemoryLink::new("test".to_string(), 0.8);
+        let initial_wave = link.wave;
+        let now = Utc::now();
+        link.last_seen = now;
+
+        link.tick(now);
+
+        // Wave should remain the same if no time passed
+        assert_eq!(link.wave, initial_wave);
+    }
+
+    #[test]
+    fn test_reinforce_success_counter() {
+        let mut link = MemoryLink::new("test".to_string(), 0.8);
+
+        link.reinforce(Utc::now(), 0.1);
+        link.reinforce(Utc::now(), 0.1);
+        link.reinforce(Utc::now(), 0.1);
+
+        assert_eq!(link.success_count, 3);
+    }
+
+    #[test]
+    fn test_next_ping_boundary_values() {
+        let mut link = MemoryLink::new("test".to_string(), 0.8);
+
+        // Wave = 0.0 should give min delay
+        link.wave = 0.0;
+        let delay_min = next_ping_seconds(&link, 90, 3600);
+        assert_eq!(delay_min, 90);
+
+        // Wave = 1.0 should give max delay
+        link.wave = 1.0;
+        let delay_max = next_ping_seconds(&link, 90, 3600);
+        assert_eq!(delay_max, 3600);
+    }
 }
