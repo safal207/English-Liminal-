@@ -1,4 +1,4 @@
-.PHONY: help build test validate clean install cli db-inspect health
+.PHONY: help build test test-integration test-all validate clean install cli db-inspect health build-android build-ios build-all gen-bindings
 
 # Default target
 help:
@@ -27,11 +27,21 @@ build:
 	cd core && cargo build --release
 	@echo "✅ Build complete"
 
-# Run all tests
+# Run all unit tests
 test:
-	@echo "🧪 Running tests..."
+	@echo "🧪 Running unit tests..."
 	cd core && cargo test --lib
-	@echo "✅ Tests complete"
+	@echo "✅ Unit tests complete"
+
+# Run integration tests (sequentially to avoid race conditions)
+test-integration:
+	@echo "🧪 Running integration tests..."
+	cd core && cargo test --tests -- --test-threads=1
+	@echo "✅ Integration tests complete"
+
+# Run all tests (unit + integration)
+test-all: test test-integration
+	@echo "✅ All tests complete"
 
 # Build CLI tool
 cli:
@@ -124,3 +134,31 @@ stats:
 	@echo ""
 	@echo "Tests:"
 	@grep -r "#\[test\]" core/src | wc -l
+
+# ============================================================================
+# Mobile Build Commands
+# ============================================================================
+
+# Generate Flutter/Dart bindings
+gen-bindings:
+	@echo "🔗 Generating Flutter bindings..."
+	./scripts/generate-bindings.sh
+
+# Build for Android
+build-android:
+	@echo "🤖 Building for Android..."
+	./scripts/build-android.sh
+
+# Build for iOS
+build-ios:
+	@echo "🍎 Building for iOS..."
+	./scripts/build-ios.sh
+
+# Build everything (bindings + Android + iOS)
+build-all:
+	@echo "🚀 Building for all platforms..."
+	./scripts/build.sh --all
+
+# Quick mobile dev cycle: bindings + Android
+mobile-dev: gen-bindings build-android
+	@echo "✅ Mobile dev build complete"
