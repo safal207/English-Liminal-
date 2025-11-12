@@ -25,18 +25,13 @@ pub struct Role {
     pub difficulty: Difficulty,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "lowercase")]
 pub enum Difficulty {
     Beginner,
+    #[default]
     Intermediate,
     Advanced,
-}
-
-impl Default for Difficulty {
-    fn default() -> Self {
-        Difficulty::Intermediate
-    }
 }
 
 /// Role Coherence Score: measures how naturally user embodies the role
@@ -223,10 +218,10 @@ impl RoleProgress {
     /// Calculate consistency multiplier based on engagement pattern
     fn consistency_multiplier(&self) -> f32 {
         match self.consecutive_days {
-            d if d >= 7 => 1.5,  // Week+ streak
-            d if d >= 3 => 1.2,  // 3-6 days
-            d if d >= 1 => 1.0,  // Daily
-            _ => 0.8,             // Sporadic
+            d if d >= 7 => 1.5, // Week+ streak
+            d if d >= 3 => 1.2, // 3-6 days
+            d if d >= 1 => 1.0, // Daily
+            _ => 0.8,           // Sporadic
         }
     }
 
@@ -258,7 +253,7 @@ impl RoleProgress {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EmotionTag {
     pub scene_id: String,
-    pub tone: String, // "Calm", "Nervous", "Confident", "Uncertain"
+    pub tone: String,    // "Calm", "Nervous", "Confident", "Uncertain"
     pub confidence: f32, // 0.0 - 1.0
     pub timestamp: DateTime<Utc>,
 }
@@ -276,9 +271,9 @@ impl EmotionTag {
     /// Get color code for UI feedback
     pub fn color_hex(&self) -> &'static str {
         match self.tone.as_str() {
-            "Calm" | "Confident" | "Clear" => "#7ED321", // Green
+            "Calm" | "Confident" | "Clear" => "#7ED321",     // Green
             "Nervous" | "Uncertain" | "Rushed" => "#F5A623", // Amber
-            _ => "#4A90E2", // Blue (neutral)
+            _ => "#4A90E2",                                  // Blue (neutral)
         }
     }
 
@@ -368,8 +363,14 @@ pub fn liminal_transition(progress: &RoleProgress, role_title: &str) -> LiminalT
     let curr_coherence = progress.coherence;
 
     let message = match curr_coherence {
-        c if c >= 0.9 => format!("You've mastered being {}. Ready for the next chapter?", role_title),
-        c if c >= 0.75 => format!("You're one step closer to being the {} you want to be.", role_title),
+        c if c >= 0.9 => format!(
+            "You've mastered being {}. Ready for the next chapter?",
+            role_title
+        ),
+        c if c >= 0.75 => format!(
+            "You're one step closer to being the {} you want to be.",
+            role_title
+        ),
         c if c >= 0.5 => format!("Half way there. The {} in you is emerging.", role_title),
         c if c >= 0.25 => format!("You're on the path to becoming {}.", role_title),
         _ => format!("First step taken as {}. Keep going.", role_title),
@@ -489,10 +490,22 @@ mod tests {
         let mut progress = RoleProgress::new("test".to_string(), 5);
 
         // Add 3 confident, 1 nervous
-        progress.emotion_tags.push(EmotionTag::new("s1".to_string(), "Calm".to_string(), 0.9));
-        progress.emotion_tags.push(EmotionTag::new("s2".to_string(), "Confident".to_string(), 0.85));
-        progress.emotion_tags.push(EmotionTag::new("s3".to_string(), "Clear".to_string(), 0.8));
-        progress.emotion_tags.push(EmotionTag::new("s4".to_string(), "Nervous".to_string(), 0.6));
+        progress
+            .emotion_tags
+            .push(EmotionTag::new("s1".to_string(), "Calm".to_string(), 0.9));
+        progress.emotion_tags.push(EmotionTag::new(
+            "s2".to_string(),
+            "Confident".to_string(),
+            0.85,
+        ));
+        progress
+            .emotion_tags
+            .push(EmotionTag::new("s3".to_string(), "Clear".to_string(), 0.8));
+        progress.emotion_tags.push(EmotionTag::new(
+            "s4".to_string(),
+            "Nervous".to_string(),
+            0.6,
+        ));
 
         let balance = progress.emotion_balance();
         assert!((balance - 0.75).abs() < 0.01); // 3/4 = 0.75
@@ -520,8 +533,14 @@ mod tests {
         assert_eq!(trace.social_echo_score(), 0);
 
         // Add reflections
-        trace.add_reflection(Reflection::new("trace-1".to_string(), "Great job!".to_string()));
-        trace.add_reflection(Reflection::new("trace-1".to_string(), "Keep going!".to_string()));
+        trace.add_reflection(Reflection::new(
+            "trace-1".to_string(),
+            "Great job!".to_string(),
+        ));
+        trace.add_reflection(Reflection::new(
+            "trace-1".to_string(),
+            "Keep going!".to_string(),
+        ));
 
         assert_eq!(trace.social_echo_score(), 2);
     }

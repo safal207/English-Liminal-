@@ -1,7 +1,6 @@
 use anyhow::Result;
 use chrono::{DateTime, Utc};
 use rusqlite::{params, Connection};
-use serde_json;
 
 use crate::retention::MemoryLink;
 use crate::roles::{EmotionTag, Reflection, ResonanceTrace, RoleProgress};
@@ -116,8 +115,10 @@ impl Store {
 
         let mut stmt = self.conn.prepare(&query)?;
 
-        let params_refs: Vec<&dyn rusqlite::ToSql> =
-            params_vec.iter().map(|p| p.as_ref() as &dyn rusqlite::ToSql).collect();
+        let params_refs: Vec<&dyn rusqlite::ToSql> = params_vec
+            .iter()
+            .map(|p| p.as_ref() as &dyn rusqlite::ToSql)
+            .collect();
 
         let rows = stmt.query_map(params_refs.as_slice(), |row| {
             Ok(serde_json::json!({
@@ -193,7 +194,13 @@ impl Store {
         let rows = stmt.query_map([], |row| {
             let last_seen_str: String = row.get(1)?;
             let last_seen = DateTime::parse_from_rfc3339(&last_seen_str)
-                .map_err(|e| rusqlite::Error::FromSqlConversionFailure(1, rusqlite::types::Type::Text, Box::new(e)))?
+                .map_err(|e| {
+                    rusqlite::Error::FromSqlConversionFailure(
+                        1,
+                        rusqlite::types::Type::Text,
+                        Box::new(e),
+                    )
+                })?
                 .with_timezone(&Utc);
 
             Ok(MemoryLink {
@@ -250,9 +257,11 @@ impl Store {
     pub fn get_use_in_wild_count(&self) -> Result<u32> {
         let count: u32 = self
             .conn
-            .query_row("SELECT SUM(use_in_wild_count) FROM memory_links", [], |row| {
-                row.get(0)
-            })
+            .query_row(
+                "SELECT SUM(use_in_wild_count) FROM memory_links",
+                [],
+                |row| row.get(0),
+            )
             .unwrap_or(0);
         Ok(count)
     }
@@ -373,7 +382,13 @@ impl Store {
         let rows = stmt.query_map(params![role_id], |row| {
             let timestamp_str: String = row.get(3)?;
             let timestamp = DateTime::parse_from_rfc3339(&timestamp_str)
-                .map_err(|e| rusqlite::Error::FromSqlConversionFailure(3, rusqlite::types::Type::Text, Box::new(e)))?
+                .map_err(|e| {
+                    rusqlite::Error::FromSqlConversionFailure(
+                        3,
+                        rusqlite::types::Type::Text,
+                        Box::new(e),
+                    )
+                })?
                 .with_timezone(&Utc);
 
             Ok(EmotionTag {
@@ -436,8 +451,13 @@ impl Store {
         }
     }
 
-    pub fn get_recent_traces(&self, role_id: Option<&str>, limit: usize) -> Result<Vec<ResonanceTrace>> {
-        let mut query = "SELECT id, role_id, scene_id, message, created_at FROM resonance_traces".to_string();
+    pub fn get_recent_traces(
+        &self,
+        role_id: Option<&str>,
+        limit: usize,
+    ) -> Result<Vec<ResonanceTrace>> {
+        let mut query =
+            "SELECT id, role_id, scene_id, message, created_at FROM resonance_traces".to_string();
         let mut params_vec: Vec<Box<dyn rusqlite::ToSql>> = Vec::new();
 
         if let Some(rid) = role_id {
@@ -448,13 +468,21 @@ impl Store {
         params_vec.push(Box::new(limit));
 
         let mut stmt = self.conn.prepare(&query)?;
-        let params_refs: Vec<&dyn rusqlite::ToSql> =
-            params_vec.iter().map(|p| p.as_ref() as &dyn rusqlite::ToSql).collect();
+        let params_refs: Vec<&dyn rusqlite::ToSql> = params_vec
+            .iter()
+            .map(|p| p.as_ref() as &dyn rusqlite::ToSql)
+            .collect();
 
         let rows = stmt.query_map(params_refs.as_slice(), |row| {
             let created_at_str: String = row.get(4)?;
             let created_at = DateTime::parse_from_rfc3339(&created_at_str)
-                .map_err(|e| rusqlite::Error::FromSqlConversionFailure(4, rusqlite::types::Type::Text, Box::new(e)))?
+                .map_err(|e| {
+                    rusqlite::Error::FromSqlConversionFailure(
+                        4,
+                        rusqlite::types::Type::Text,
+                        Box::new(e),
+                    )
+                })?
                 .with_timezone(&Utc);
 
             Ok((
@@ -503,7 +531,13 @@ impl Store {
         let rows = stmt.query_map(params![trace_id], |row| {
             let created_at_str: String = row.get(2)?;
             let created_at = DateTime::parse_from_rfc3339(&created_at_str)
-                .map_err(|e| rusqlite::Error::FromSqlConversionFailure(2, rusqlite::types::Type::Text, Box::new(e)))?
+                .map_err(|e| {
+                    rusqlite::Error::FromSqlConversionFailure(
+                        2,
+                        rusqlite::types::Type::Text,
+                        Box::new(e),
+                    )
+                })?
                 .with_timezone(&Utc);
 
             Ok(Reflection {
@@ -684,10 +718,18 @@ mod tests {
 
         let mut progress1 = RoleProgress::new("qa_abroad".to_string(), 3);
         progress1.complete_scene(EmotionTag::new("s1".to_string(), "Calm".to_string(), 0.8));
-        progress1.complete_scene(EmotionTag::new("s2".to_string(), "Confident".to_string(), 0.9));
+        progress1.complete_scene(EmotionTag::new(
+            "s2".to_string(),
+            "Confident".to_string(),
+            0.9,
+        ));
 
         let mut progress2 = RoleProgress::new("visa_journey".to_string(), 2);
-        progress2.complete_scene(EmotionTag::new("s1".to_string(), "Nervous".to_string(), 0.7));
+        progress2.complete_scene(EmotionTag::new(
+            "s1".to_string(),
+            "Nervous".to_string(),
+            0.7,
+        ));
 
         store.save_role_progress(&progress1).unwrap();
         store.save_role_progress(&progress2).unwrap();

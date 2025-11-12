@@ -64,16 +64,22 @@ pub struct Step {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Rehearsal {
     #[serde(default = "default_decay")]
-    pub decay_alpha: f32,           // 0.7..0.9
+    pub decay_alpha: f32, // 0.7..0.9
     #[serde(default = "default_ping_min")]
-    pub next_ping_sec_min: u32,     // 90
+    pub next_ping_sec_min: u32, // 90
     #[serde(default = "default_ping_max")]
-    pub next_ping_sec_max: u32,     // 3600
+    pub next_ping_sec_max: u32, // 3600
 }
 
-fn default_decay() -> f32 { 0.82 }
-fn default_ping_min() -> u32 { 90 }
-fn default_ping_max() -> u32 { 3600 }
+fn default_decay() -> f32 {
+    0.82
+}
+fn default_ping_min() -> u32 {
+    90
+}
+fn default_ping_max() -> u32 {
+    3600
+}
 
 impl Default for Rehearsal {
     fn default() -> Self {
