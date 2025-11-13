@@ -1,0 +1,43 @@
+id: tech_startup_founder
+title: "Tech Startup Founder"
+description: "Build and pitch your startup in English. Master investor pitches, team leadership, customer discovery, and networking at tech events. Navigate the high-stakes world of entrepreneurship."
+
+difficulty: advanced
+estimated_duration_weeks: 4
+access_level: premium
+
+scenes:
+  - investor-pitch-01.yaml
+  - customer-discovery-02.yaml
+  - team-leadership-03.yaml
+  - tech-event-networking-04.yaml
+  - pivot-meeting-05.yaml
+
+total_coherence_target: 0.90
+
+themes:
+  - "Persuasive communication"
+  - "Vision articulation"
+  - "Leadership presence"
+  - "Fundraising and pitching"
+  - "Strategic thinking"
+
+target_audience:
+  - "Aspiring entrepreneurs"
+  - "Startup founders"
+  - "Tech professionals transitioning to leadership"
+  - "International founders in English-speaking markets"
+
+emotional_arc: |
+  You begin with the high-pressure pitch to investors, learning to distill
+  your vision into compelling stories. Through customer discovery, you learn
+  to listen deeply. As a leader, you inspire your team through uncertainty.
+  Networking becomes natural, and when it's time to pivot, you communicate
+  the change with confidence and clarity. By the end, you speak not just
+  as a founder, but as a visionary leader.
+
+premium_features:
+  - "Pitch deck vocabulary"
+  - "Investor Q&A simulations"
+  - "Leadership tone coaching"
+  - "Networking conversation starters"

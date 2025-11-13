@@ -1,0 +1,42 @@
+id: sales_professional
+title: "Sales Professional"
+description: "Master the art of B2B sales in English. Learn discovery calls, objection handling, closing techniques, and relationship building for SaaS and enterprise sales."
+
+difficulty: intermediate
+estimated_duration_weeks: 3
+access_level: premium
+
+scenes:
+  - discovery-call-01.yaml
+  - demo-presentation-02.yaml
+  - objection-handling-03.yaml
+  - negotiation-close-04.yaml
+
+total_coherence_target: 0.87
+
+themes:
+  - "Active listening"
+  - "Question-based selling"
+  - "Value articulation"
+  - "Objection reframing"
+  - "Closing with confidence"
+
+target_audience:
+  - "Sales development reps (SDRs)"
+  - "Account executives"
+  - "Business development professionals"
+  - "International sales teams"
+
+emotional_arc: |
+  You begin with discovery, learning to ask powerful questions that uncover
+  pain points. Through product demos, you learn to tell stories that sell.
+  When prospects push back with objections, you learn to reframe concerns
+  as opportunities. Finally, negotiation and closing teach you to advocate
+  for value while building trust. By the end, sales feels like service,
+  not selling.
+
+premium_features:
+  - "SPIN selling framework"
+  - "MEDDIC qualification"
+  - "Challenger sale techniques"
+  - "Enterprise negotiation tactics"

@@ -1,0 +1,76 @@
+id: demo-presentation-02
+title: "Product Demo That Sells"
+description: "Deliver a compelling product demo tailored to customer pain points"
+context_triggers:
+  time: any
+  location: work
+  duration_max_sec: 540
+goals:
+  - "Start with their problem, not your product"
+  - "Show, don't just tell"
+  - "Handle questions smoothly"
+  - "End with a clear next step"
+steps:
+  - type: speak_check
+    prompt: "Open the demo by recapping their needs:"
+    content: "Thanks for joining. Based on our last call, you mentioned that deals slip through the cracks because follow-ups are manual. Today, I'll show you exactly how we solve that. Sound good?"
+    ref_text: "Thanks for joining Based on our last call you mentioned that deals slip through the cracks because follow ups are manual Today I'll show you exactly how we solve that Sound good"
+    hints:
+      - "Recap their pain points"
+      - "Set clear expectations"
+      - "Get buy-in upfront"
+
+  - type: speak_check
+    prompt: "Show the key feature (follow-up automation):"
+    content: "Here's the dashboard. Every deal has an automated follow-up sequence. If a rep doesn't respond in 3 days, the system sends a reminder and escalates to their manager. Watch what happens when I click here..."
+    ref_text: "Here's the dashboard Every deal has an automated follow up sequence If a rep doesn't respond in three days the system sends a reminder and escalates to their manager Watch what happens when I click here"
+    hints:
+      - "Use action words ('click', 'watch')"
+      - "Tie features to their pain"
+      - "Make it interactive"
+
+  - type: listen
+    prompt: "Listen to a question mid-demo:"
+    content: "Can we customize those reminder intervals? Our sales cycle is longer than 3 days."
+
+  - type: speak_check
+    prompt: "Handle the question confidently:"
+    content: "Absolutely. Everything is customizable. You can set intervals per deal stage or per rep. Let me show you the settings panel real quick."
+    ref_text: "Absolutely Everything is customizable You can set intervals per deal stage or per rep Let me show you the settings panel real quick"
+    hints:
+      - "Answer with 'yes, and'"
+      - "Show immediately (don't just talk)"
+      - "Keep momentum going"
+
+  - type: speak_check
+    prompt: "Transition to the value prop (pipeline visibility):"
+    content: "Now, remember you mentioned no visibility into pipeline health? Here's the real-time dashboard. You can see every deal, who owns it, and when it's due. Your board will love this view."
+    ref_text: "Now remember you mentioned no visibility into pipeline health Here's the real time dashboard You can see every deal who owns it and when it's due Your board will love this view"
+    hints:
+      - "Use their words ('pipeline health')"
+      - "Show the exact screen they need"
+      - "Connect to their stakeholders"
+
+  - type: speak_check
+    prompt: "Close the demo with a next step:"
+    content: "So that's how we solve the follow-up and visibility challenges. What questions do you have? And if this looks good, I'd love to set up a trial for your team next week."
+    ref_text: "So that's how we solve the follow up and visibility challenges What questions do you have And if this looks good I'd love to set up a trial for your team next week"
+    hints:
+      - "Recap what you showed"
+      - "Invite questions"
+      - "Suggest a clear next step"
+
+  - type: contrast
+    prompt: "Which demo approach is most effective?"
+    answers:
+      - "Let me walk you through every single feature we have, starting with the login screen."
+      - "Based on your pain points, I'll show you the 3 features that solve them. We'll skip the rest unless you want to see more."
+      - "This product is amazing. You're going to love it. Let me just click through everything really fast."
+
+  - type: apply_to_life
+    prompt: "Practice: Explain how a product or tool solves a specific problem"
+
+rehearsal:
+  decay_alpha: 0.89
+  next_ping_sec_min: 3600
+  next_ping_sec_max: 345600

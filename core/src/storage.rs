@@ -2,6 +2,10 @@ use anyhow::Result;
 use chrono::{DateTime, Utc};
 use rusqlite::{params, Connection};
 
+use crate::monetization::{
+    ContentAccess, ContentType, ContentUnlock, Entitlement, EntitlementReason, Purchase,
+    Subscription, SubscriptionStatus,
+};
 use crate::retention::MemoryLink;
 use crate::roles::{EmotionTag, Reflection, ResonanceTrace, RoleProgress};
 use crate::telemetry::{EventBatch, TelemetryEvent};
@@ -99,6 +103,41 @@ impl Store {
               status TEXT NOT NULL DEFAULT 'pending'
             );
 
+            CREATE TABLE IF NOT EXISTS subscriptions(
+              id TEXT PRIMARY KEY,
+              user_id TEXT NOT NULL,
+              tier TEXT NOT NULL,
+              status TEXT NOT NULL,
+              started_at TEXT NOT NULL,
+              expires_at TEXT,
+              cancelled_at TEXT,
+              platform TEXT NOT NULL,
+              transaction_id TEXT
+            );
+
+            CREATE TABLE IF NOT EXISTS purchases(
+              id TEXT PRIMARY KEY,
+              user_id TEXT NOT NULL,
+              product_id TEXT NOT NULL,
+              platform TEXT NOT NULL,
+              transaction_id TEXT NOT NULL UNIQUE,
+              purchased_at TEXT NOT NULL,
+              price_cents INTEGER NOT NULL,
+              currency TEXT NOT NULL,
+              verified INTEGER NOT NULL DEFAULT 0,
+              metadata TEXT NOT NULL
+            );
+
+            CREATE TABLE IF NOT EXISTS content_unlocks(
+              id TEXT PRIMARY KEY,
+              user_id TEXT NOT NULL,
+              content_type TEXT NOT NULL,
+              content_id TEXT NOT NULL,
+              unlocked_at TEXT NOT NULL,
+              purchase_id TEXT,
+              FOREIGN KEY(purchase_id) REFERENCES purchases(id)
+            );
+
             CREATE INDEX IF NOT EXISTS idx_events_ts ON events(ts);
             CREATE INDEX IF NOT EXISTS idx_events_kind ON events(kind);
             CREATE INDEX IF NOT EXISTS idx_memory_wave ON memory_links(wave);
@@ -108,6 +147,10 @@ impl Store {
             CREATE INDEX IF NOT EXISTS idx_telemetry_status ON telemetry_events(status);
             CREATE INDEX IF NOT EXISTS idx_telemetry_timestamp ON telemetry_events(timestamp);
             CREATE INDEX IF NOT EXISTS idx_batch_status ON telemetry_batches(status);
+            CREATE INDEX IF NOT EXISTS idx_subscriptions_user ON subscriptions(user_id);
+            CREATE INDEX IF NOT EXISTS idx_purchases_user ON purchases(user_id);
+            CREATE INDEX IF NOT EXISTS idx_content_unlocks_user ON content_unlocks(user_id);
+            CREATE INDEX IF NOT EXISTS idx_content_unlocks_content ON content_unlocks(content_type, content_id);
         "#,
         )?;
         Ok(Self { conn })
@@ -754,6 +797,292 @@ impl Store {
 
         Ok(deleted)
     }
+
+    // ========================================================================
+    // Monetization - Subscriptions
+    // ========================================================================
+
+    /// Save or update a subscription
+    pub fn save_subscription(&self, subscription: &Subscription) -> Result<()> {
+        self.conn.execute(
+            r#"
+            INSERT INTO subscriptions(id, user_id, tier, status, started_at, expires_at, cancelled_at, platform, transaction_id)
+            VALUES(?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)
+            ON CONFLICT(id) DO UPDATE SET
+              status = excluded.status,
+              expires_at = excluded.expires_at,
+              cancelled_at = excluded.cancelled_at,
+              transaction_id = excluded.transaction_id
+            "#,
+            params![
+                subscription.id,
+                subscription.user_id,
+                serde_json::to_string(&subscription.tier)?,
+                serde_json::to_string(&subscription.status)?,
+                subscription.started_at.to_rfc3339(),
+                subscription.expires_at.map(|dt| dt.to_rfc3339()),
+                subscription.cancelled_at.map(|dt| dt.to_rfc3339()),
+                serde_json::to_string(&subscription.platform)?,
+                subscription.transaction_id,
+            ],
+        )?;
+        Ok(())
+    }
+
+    /// Get active subscription for a user
+    pub fn get_user_subscription(&self, user_id: &str) -> Result<Option<Subscription>> {
+        let mut stmt = self.conn.prepare(
+            r#"
+            SELECT id, user_id, tier, status, started_at, expires_at, cancelled_at, platform, transaction_id
+            FROM subscriptions
+            WHERE user_id = ?1
+            ORDER BY started_at DESC
+            LIMIT 1
+            "#,
+        )?;
+
+        let mut rows = stmt.query(params![user_id])?;
+        if let Some(row) = rows.next()? {
+            let tier: String = row.get(2)?;
+            let status: String = row.get(3)?;
+            let started_at_str: String = row.get(4)?;
+            let expires_at_str: Option<String> = row.get(5)?;
+            let cancelled_at_str: Option<String> = row.get(6)?;
+            let platform: String = row.get(7)?;
+
+            Ok(Some(Subscription {
+                id: row.get(0)?,
+                user_id: row.get(1)?,
+                tier: serde_json::from_str(&tier)?,
+                status: serde_json::from_str(&status)?,
+                started_at: DateTime::parse_from_rfc3339(&started_at_str)?.with_timezone(&Utc),
+                expires_at: expires_at_str
+                    .map(|s| DateTime::parse_from_rfc3339(&s).map(|dt| dt.with_timezone(&Utc)))
+                    .transpose()?,
+                cancelled_at: cancelled_at_str
+                    .map(|s| DateTime::parse_from_rfc3339(&s).map(|dt| dt.with_timezone(&Utc)))
+                    .transpose()?,
+                platform: serde_json::from_str(&platform)?,
+                transaction_id: row.get(8)?,
+            }))
+        } else {
+            Ok(None)
+        }
+    }
+
+    // ========================================================================
+    // Monetization - Purchases
+    // ========================================================================
+
+    /// Save a purchase record
+    pub fn save_purchase(&self, purchase: &Purchase) -> Result<()> {
+        self.conn.execute(
+            r#"
+            INSERT INTO purchases(id, user_id, product_id, platform, transaction_id, purchased_at, price_cents, currency, verified, metadata)
+            VALUES(?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)
+            "#,
+            params![
+                purchase.id,
+                purchase.user_id,
+                purchase.product_id,
+                serde_json::to_string(&purchase.platform)?,
+                purchase.transaction_id,
+                purchase.purchased_at.to_rfc3339(),
+                purchase.price_cents,
+                purchase.currency,
+                if purchase.verified { 1 } else { 0 },
+                serde_json::to_string(&purchase.metadata)?,
+            ],
+        )?;
+        Ok(())
+    }
+
+    /// Get purchase by transaction ID
+    pub fn get_purchase_by_transaction(&self, transaction_id: &str) -> Result<Option<Purchase>> {
+        let mut stmt = self.conn.prepare(
+            r#"
+            SELECT id, user_id, product_id, platform, transaction_id, purchased_at, price_cents, currency, verified, metadata
+            FROM purchases
+            WHERE transaction_id = ?1
+            "#,
+        )?;
+
+        let mut rows = stmt.query(params![transaction_id])?;
+        if let Some(row) = rows.next()? {
+            let platform: String = row.get(3)?;
+            let purchased_at_str: String = row.get(5)?;
+            let verified: i32 = row.get(8)?;
+            let metadata: String = row.get(9)?;
+
+            Ok(Some(Purchase {
+                id: row.get(0)?,
+                user_id: row.get(1)?,
+                product_id: row.get(2)?,
+                platform: serde_json::from_str(&platform)?,
+                transaction_id: row.get(4)?,
+                purchased_at: DateTime::parse_from_rfc3339(&purchased_at_str)?.with_timezone(&Utc),
+                price_cents: row.get(6)?,
+                currency: row.get(7)?,
+                verified: verified == 1,
+                metadata: serde_json::from_str(&metadata)?,
+            }))
+        } else {
+            Ok(None)
+        }
+    }
+
+    /// Mark purchase as verified
+    pub fn verify_purchase(&self, purchase_id: &str) -> Result<()> {
+        self.conn.execute(
+            "UPDATE purchases SET verified = 1 WHERE id = ?1",
+            params![purchase_id],
+        )?;
+        Ok(())
+    }
+
+    // ========================================================================
+    // Monetization - Content Unlocks
+    // ========================================================================
+
+    /// Unlock content for a user
+    pub fn unlock_content(&self, unlock: &ContentUnlock) -> Result<()> {
+        self.conn.execute(
+            r#"
+            INSERT INTO content_unlocks(id, user_id, content_type, content_id, unlocked_at, purchase_id)
+            VALUES(?1, ?2, ?3, ?4, ?5, ?6)
+            "#,
+            params![
+                unlock.id,
+                unlock.user_id,
+                serde_json::to_string(&unlock.content_type)?,
+                unlock.content_id,
+                unlock.unlocked_at.to_rfc3339(),
+                unlock.purchase_id,
+            ],
+        )?;
+        Ok(())
+    }
+
+    /// Check if user has unlocked specific content
+    pub fn has_content_unlocked(
+        &self,
+        user_id: &str,
+        content_type: &ContentType,
+        content_id: &str,
+    ) -> Result<bool> {
+        let content_type_str = serde_json::to_string(content_type)?;
+        let count: i64 = self.conn.query_row(
+            "SELECT COUNT(*) FROM content_unlocks WHERE user_id = ?1 AND content_type = ?2 AND content_id = ?3",
+            params![user_id, content_type_str, content_id],
+            |row| row.get(0),
+        )?;
+        Ok(count > 0)
+    }
+
+    /// Get all unlocked content for a user
+    pub fn get_user_unlocks(&self, user_id: &str) -> Result<Vec<ContentUnlock>> {
+        let mut stmt = self.conn.prepare(
+            r#"
+            SELECT id, user_id, content_type, content_id, unlocked_at, purchase_id
+            FROM content_unlocks
+            WHERE user_id = ?1
+            ORDER BY unlocked_at DESC
+            "#,
+        )?;
+
+        let rows = stmt.query_map(params![user_id], |row| {
+            let content_type_str: String = row.get(2)?;
+            let unlocked_at_str: String = row.get(4)?;
+
+            Ok(ContentUnlock {
+                id: row.get(0)?,
+                user_id: row.get(1)?,
+                content_type: serde_json::from_str(&content_type_str).map_err(|e| {
+                    rusqlite::Error::FromSqlConversionFailure(
+                        2,
+                        rusqlite::types::Type::Text,
+                        Box::new(e),
+                    )
+                })?,
+                content_id: row.get(3)?,
+                unlocked_at: DateTime::parse_from_rfc3339(&unlocked_at_str)
+                    .map_err(|e| {
+                        rusqlite::Error::FromSqlConversionFailure(
+                            4,
+                            rusqlite::types::Type::Text,
+                            Box::new(e),
+                        )
+                    })?
+                    .with_timezone(&Utc),
+                purchase_id: row.get(5)?,
+            })
+        })?;
+
+        rows.collect::<Result<Vec<_>, _>>().map_err(Into::into)
+    }
+
+    // ========================================================================
+    // Monetization - Entitlements
+    // ========================================================================
+
+    /// Check user's entitlement to access content
+    pub fn check_entitlement(
+        &self,
+        user_id: &str,
+        content_access: &ContentAccess,
+        content_type: Option<&ContentType>,
+        content_id: Option<&str>,
+    ) -> Result<Entitlement> {
+        // Free content is always accessible
+        if *content_access == ContentAccess::Free {
+            return Ok(Entitlement::granted(EntitlementReason::FreeContent, None));
+        }
+
+        // Get user's subscription
+        let subscription = self.get_user_subscription(user_id)?;
+
+        // Check for premium subscription
+        if *content_access == ContentAccess::Premium {
+            if let Some(sub) = subscription {
+                if sub.has_premium_access() {
+                    return Ok(Entitlement::granted(
+                        EntitlementReason::PremiumSubscription,
+                        Some(sub),
+                    ));
+                } else if sub.status == SubscriptionStatus::Expired {
+                    return Ok(Entitlement::denied(EntitlementReason::SubscriptionExpired));
+                }
+            }
+            return Ok(Entitlement::denied(EntitlementReason::RequiresPremium));
+        }
+
+        // Check for unlockable content
+        if *content_access == ContentAccess::Unlockable {
+            // If premium subscription, grant access
+            if let Some(ref sub) = subscription {
+                if sub.has_premium_access() {
+                    return Ok(Entitlement::granted(
+                        EntitlementReason::PremiumSubscription,
+                        Some(sub.clone()),
+                    ));
+                }
+            }
+
+            // Check individual unlock
+            if let (Some(ct), Some(cid)) = (content_type, content_id) {
+                if self.has_content_unlocked(user_id, ct, cid)? {
+                    return Ok(Entitlement::granted(
+                        EntitlementReason::IndividualUnlock,
+                        subscription,
+                    ));
+                }
+            }
+
+            return Ok(Entitlement::denied(EntitlementReason::RequiresUnlock));
+        }
+
+        Ok(Entitlement::denied(EntitlementReason::RequiresPremium))
+    }
 }
 
 #[derive(Debug, serde::Serialize)]
@@ -1068,5 +1397,170 @@ mod tests {
 
         let stats = store.get_telemetry_stats().unwrap();
         assert_eq!(stats.batched_events, 0);
+    }
+
+    #[test]
+    fn test_subscription_save_load() {
+        use crate::monetization::{Platform, Subscription, SubscriptionStatus, SubscriptionTier};
+        use chrono::Utc;
+
+        let store = Store::open(":memory:").unwrap();
+
+        let mut sub = Subscription::new_free("user123".to_string());
+        sub.tier = SubscriptionTier::PremiumMonthly;
+        sub.status = SubscriptionStatus::Active;
+        sub.expires_at = Some(Utc::now() + chrono::Duration::days(30));
+        sub.platform = Platform::AppStore;
+
+        store.save_subscription(&sub).unwrap();
+
+        let loaded = store.get_user_subscription("user123").unwrap();
+        assert!(loaded.is_some());
+        let loaded = loaded.unwrap();
+        assert_eq!(loaded.user_id, "user123");
+        assert_eq!(loaded.tier, SubscriptionTier::PremiumMonthly);
+        assert_eq!(loaded.status, SubscriptionStatus::Active);
+        assert!(loaded.has_premium_access());
+    }
+
+    #[test]
+    fn test_purchase_save_load() {
+        use crate::monetization::{Platform, Purchase};
+
+        let store = Store::open(":memory:").unwrap();
+
+        let purchase = Purchase::new(
+            "user123".to_string(),
+            "premium_monthly".to_string(),
+            Platform::PlayStore,
+            "txn_12345".to_string(),
+            999,
+            "USD".to_string(),
+        );
+
+        store.save_purchase(&purchase).unwrap();
+
+        let loaded = store.get_purchase_by_transaction("txn_12345").unwrap();
+        assert!(loaded.is_some());
+        let loaded = loaded.unwrap();
+        assert_eq!(loaded.user_id, "user123");
+        assert_eq!(loaded.product_id, "premium_monthly");
+        assert_eq!(loaded.price_cents, 999);
+        assert!(!loaded.verified);
+
+        // Verify purchase
+        store.verify_purchase(&loaded.id).unwrap();
+        let verified = store.get_purchase_by_transaction("txn_12345").unwrap();
+        assert!(verified.unwrap().verified);
+    }
+
+    #[test]
+    fn test_content_unlock() {
+        use crate::monetization::{ContentType, ContentUnlock};
+
+        let store = Store::open(":memory:").unwrap();
+
+        let unlock = ContentUnlock::new(
+            "user123".to_string(),
+            ContentType::Role,
+            "qa_engineer_abroad".to_string(),
+            None, // No purchase_id to avoid foreign key constraint
+        );
+
+        store.unlock_content(&unlock).unwrap();
+
+        let has_unlock = store
+            .has_content_unlocked("user123", &ContentType::Role, "qa_engineer_abroad")
+            .unwrap();
+        assert!(has_unlock);
+
+        let unlocks = store.get_user_unlocks("user123").unwrap();
+        assert_eq!(unlocks.len(), 1);
+        assert_eq!(unlocks[0].content_id, "qa_engineer_abroad");
+    }
+
+    #[test]
+    fn test_entitlement_free_content() {
+        use crate::monetization::{ContentAccess, EntitlementReason};
+
+        let store = Store::open(":memory:").unwrap();
+
+        let entitlement = store
+            .check_entitlement("user123", &ContentAccess::Free, None, None)
+            .unwrap();
+
+        assert!(entitlement.has_access);
+        assert_eq!(entitlement.reason, EntitlementReason::FreeContent);
+    }
+
+    #[test]
+    fn test_entitlement_premium_subscription() {
+        use crate::monetization::{
+            ContentAccess, EntitlementReason, Platform, Subscription, SubscriptionStatus,
+            SubscriptionTier,
+        };
+        use chrono::Utc;
+
+        let store = Store::open(":memory:").unwrap();
+
+        // Create premium subscription
+        let mut sub = Subscription::new_free("user123".to_string());
+        sub.tier = SubscriptionTier::PremiumMonthly;
+        sub.status = SubscriptionStatus::Active;
+        sub.expires_at = Some(Utc::now() + chrono::Duration::days(30));
+        sub.platform = Platform::AppStore;
+        store.save_subscription(&sub).unwrap();
+
+        // Check premium content access
+        let entitlement = store
+            .check_entitlement("user123", &ContentAccess::Premium, None, None)
+            .unwrap();
+
+        assert!(entitlement.has_access);
+        assert_eq!(entitlement.reason, EntitlementReason::PremiumSubscription);
+    }
+
+    #[test]
+    fn test_entitlement_individual_unlock() {
+        use crate::monetization::{ContentAccess, ContentType, ContentUnlock, EntitlementReason};
+
+        let store = Store::open(":memory:").unwrap();
+
+        // Unlock specific content
+        let unlock = ContentUnlock::new(
+            "user123".to_string(),
+            ContentType::Role,
+            "qa_engineer_abroad".to_string(),
+            None,
+        );
+        store.unlock_content(&unlock).unwrap();
+
+        // Check unlockable content access
+        let entitlement = store
+            .check_entitlement(
+                "user123",
+                &ContentAccess::Unlockable,
+                Some(&ContentType::Role),
+                Some("qa_engineer_abroad"),
+            )
+            .unwrap();
+
+        assert!(entitlement.has_access);
+        assert_eq!(entitlement.reason, EntitlementReason::IndividualUnlock);
+    }
+
+    #[test]
+    fn test_entitlement_denied() {
+        use crate::monetization::{ContentAccess, EntitlementReason};
+
+        let store = Store::open(":memory:").unwrap();
+
+        // User with no subscription trying to access premium content
+        let entitlement = store
+            .check_entitlement("user123", &ContentAccess::Premium, None, None)
+            .unwrap();
+
+        assert!(!entitlement.has_access);
+        assert_eq!(entitlement.reason, EntitlementReason::RequiresPremium);
     }
 }

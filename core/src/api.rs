@@ -6,6 +6,7 @@ use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
 
+use crate::monetization::{ContentAccess, ContentType, ContentUnlock, Purchase, Subscription};
 use crate::roles::{
     liminal_transition, EmotionTag, Reflection, ResonanceTrace, Role, RoleCoherenceScore,
     RoleProgress,
@@ -523,6 +524,121 @@ pub fn cleanup_old_telemetry(days: i64) -> Result<u32, String> {
         .map_err(|e| e.to_string())?;
 
     Ok(deleted as u32)
+}
+
+// ============================================================================
+// Monetization
+// ============================================================================
+
+#[frb(sync)]
+pub fn save_subscription(subscription_json: String) -> Result<(), String> {
+    let guard = STORE.lock();
+    let store = guard
+        .as_ref()
+        .ok_or_else(|| "Storage not initialized".to_string())?;
+
+    let subscription: Subscription =
+        serde_json::from_str(&subscription_json).map_err(|e| e.to_string())?;
+
+    store
+        .save_subscription(&subscription)
+        .map_err(|e| e.to_string())
+}
+
+#[frb(sync)]
+pub fn get_user_subscription(user_id: String) -> Result<String, String> {
+    let guard = STORE.lock();
+    let store = guard
+        .as_ref()
+        .ok_or_else(|| "Storage not initialized".to_string())?;
+
+    let subscription = store
+        .get_user_subscription(&user_id)
+        .map_err(|e| e.to_string())?;
+
+    serde_json::to_string(&subscription).map_err(|e| e.to_string())
+}
+
+#[frb(sync)]
+pub fn save_purchase(purchase_json: String) -> Result<(), String> {
+    let guard = STORE.lock();
+    let store = guard
+        .as_ref()
+        .ok_or_else(|| "Storage not initialized".to_string())?;
+
+    let purchase: Purchase = serde_json::from_str(&purchase_json).map_err(|e| e.to_string())?;
+
+    store.save_purchase(&purchase).map_err(|e| e.to_string())
+}
+
+#[frb(sync)]
+pub fn verify_purchase(purchase_id: String) -> Result<(), String> {
+    let guard = STORE.lock();
+    let store = guard
+        .as_ref()
+        .ok_or_else(|| "Storage not initialized".to_string())?;
+
+    store
+        .verify_purchase(&purchase_id)
+        .map_err(|e| e.to_string())
+}
+
+#[frb(sync)]
+pub fn unlock_content(unlock_json: String) -> Result<(), String> {
+    let guard = STORE.lock();
+    let store = guard
+        .as_ref()
+        .ok_or_else(|| "Storage not initialized".to_string())?;
+
+    let unlock: ContentUnlock = serde_json::from_str(&unlock_json).map_err(|e| e.to_string())?;
+
+    store.unlock_content(&unlock).map_err(|e| e.to_string())
+}
+
+#[frb(sync)]
+pub fn check_content_access(
+    user_id: String,
+    content_access_json: String,
+    content_type_json: Option<String>,
+    content_id: Option<String>,
+) -> Result<String, String> {
+    let guard = STORE.lock();
+    let store = guard
+        .as_ref()
+        .ok_or_else(|| "Storage not initialized".to_string())?;
+
+    let content_access: ContentAccess =
+        serde_json::from_str(&content_access_json).map_err(|e| e.to_string())?;
+
+    let content_type: Option<ContentType> = content_type_json
+        .map(|json| serde_json::from_str(&json))
+        .transpose()
+        .map_err(|e: serde_json::Error| e.to_string())?;
+
+    let entitlement = store
+        .check_entitlement(
+            &user_id,
+            &content_access,
+            content_type.as_ref(),
+            content_id.as_deref(),
+        )
+        .map_err(|e| e.to_string())?;
+
+    serde_json::to_string(&entitlement).map_err(|e| e.to_string())
+}
+
+#[frb(sync)]
+pub fn get_user_unlocks(user_id: String) -> Result<String, String> {
+    let guard = STORE.lock();
+    let store = guard
+        .as_ref()
+        .ok_or_else(|| "Storage not initialized".to_string())?;
+
+    let unlocks = store
+        .get_user_unlocks(&user_id)
+        .map_err(|e| e.to_string())?;
+
+    serde_json::to_string(&unlocks).map_err(|e| e.to_string())
 }
 
 // ============================================================================

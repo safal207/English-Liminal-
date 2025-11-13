@@ -1,0 +1,89 @@
+id: discovery-call-01
+title: "Discovery Call Mastery"
+description: "Conduct a discovery call using SPIN selling to uncover customer needs"
+context_triggers:
+  time: any
+  location: work
+  duration_max_sec: 480
+goals:
+  - "Build rapport quickly"
+  - "Ask situation questions"
+  - "Uncover pain points with problem questions"
+  - "Create urgency with implication questions"
+  - "Position your solution with need-payoff questions"
+steps:
+  - type: speak_check
+    prompt: "Open the call with rapport-building:"
+    content: "Hi Maria, thanks for making time today. I saw on LinkedIn that you just hit your Series B milestone—congratulations! Before we dive in, tell me a bit about your role at Acme Corp."
+    ref_text: "Hi Maria thanks for making time today I saw on LinkedIn that you just hit your Series B milestone congratulations Before we dive in tell me a bit about your role at Acme Corp"
+    hints:
+      - "Personalize with research"
+      - "Show genuine interest"
+      - "Let them talk first"
+
+  - type: listen
+    prompt: "Listen to their response:"
+    content: "Thanks! I'm the VP of Sales. We're scaling fast, but our sales process is still pretty manual."
+
+  - type: speak_check
+    prompt: "Ask a Situation question:"
+    content: "Got it. Walk me through your current sales process—from lead to close. What tools are you using today?"
+    ref_text: "Got it Walk me through your current sales process from lead to close What tools are you using today"
+    hints:
+      - "Ask open-ended questions"
+      - "Understand the current state"
+      - "Gather facts before problems"
+
+  - type: listen
+    prompt: "Listen to their situation:"
+    content: "We use Salesforce for CRM, but a lot of follow-ups happen in email and spreadsheets. It's messy."
+
+  - type: speak_check
+    prompt: "Ask a Problem question:"
+    content: "Messy how? What challenges does that create for your team?"
+    ref_text: "Messy how What challenges does that create for your team"
+    hints:
+      - "Dig into pain points"
+      - "Use their words ('messy')"
+      - "Stay curious, not prescriptive"
+
+  - type: listen
+    prompt: "Listen to the pain point:"
+    content: "Deals slip through the cracks. Reps forget to follow up. We have no visibility into pipeline health."
+
+  - type: speak_check
+    prompt: "Ask an Implication question:"
+    content: "If deals keep slipping and you have no visibility, what does that mean for hitting your Q4 revenue target?"
+    ref_text: "If deals keep slipping and you have no visibility what does that mean for hitting your Q4 revenue target"
+    hints:
+      - "Create urgency with 'what if' scenarios"
+      - "Connect pain to business outcomes"
+      - "Make it personal to their goals"
+
+  - type: listen
+    prompt: "Listen to the urgency:"
+    content: "Honestly, we're at risk of missing our number. The board is watching closely."
+
+  - type: speak_check
+    prompt: "Ask a Need-Payoff question:"
+    content: "If you had a system that automatically tracked follow-ups and gave you real-time pipeline visibility, how would that change your ability to hit that target?"
+    ref_text: "If you had a system that automatically tracked follow ups and gave you real time pipeline visibility how would that change your ability to hit that target"
+    hints:
+      - "Let them sell themselves"
+      - "Paint the future state"
+      - "Use 'if' to keep it collaborative"
+
+  - type: contrast
+    prompt: "Which discovery question uncovers more value?"
+    answers:
+      - "What would it mean for your team if you could close deals 30% faster?"
+      - "Do you want to buy our product?"
+      - "Our solution is great. Let me show you a demo."
+
+  - type: apply_to_life
+    prompt: "Practice: Ask someone about a problem they're facing and dig deeper with 'why' and 'how'"
+
+rehearsal:
+  decay_alpha: 0.90
+  next_ping_sec_min: 1800
+  next_ping_sec_max: 259200
