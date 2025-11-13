@@ -756,7 +756,7 @@ impl Store {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize)]
 pub struct TelemetryStats {
     pub pending_events: usize,
     pub batched_events: usize,
