@@ -4,6 +4,7 @@ description: "Navigate the bureaucratic and emotional journey of obtaining a vis
 
 difficulty: intermediate
 estimated_duration_weeks: 2
+access_level: free
 
 scenes:
   - visa-officer-01.yaml

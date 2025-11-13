@@ -1,0 +1,34 @@
+id: remote_developer
+title: "Remote Developer"
+description: "Master async communication, code reviews, stand-ups, and team collaboration as a remote software engineer. Build confidence in technical discussions across time zones."
+
+difficulty: beginner
+estimated_duration_weeks: 2
+access_level: free
+
+scenes:
+  - async-standup-01.yaml
+  - code-review-comment-02.yaml
+  - pair-programming-03.yaml
+  - tech-debt-discussion-04.yaml
+
+total_coherence_target: 0.78
+
+themes:
+  - "Async communication"
+  - "Technical writing"
+  - "Code review etiquette"
+  - "Remote collaboration"
+
+target_audience:
+  - "Junior and mid-level developers"
+  - "Developers transitioning to remote work"
+  - "International developers joining English-speaking teams"
+  - "Bootcamp graduates"
+
+emotional_arc: |
+  You start with the daily ritual of standup updates, learning to communicate
+  progress clearly in writing. Through code reviews, you learn to give and
+  receive feedback professionally. Pair programming teaches you to think aloud.
+  When discussing tech debt, you find your voice in strategic conversations.
+  By the end, remote work feels natural and empowering.

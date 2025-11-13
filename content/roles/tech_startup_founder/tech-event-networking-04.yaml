@@ -1,0 +1,62 @@
+id: tech-event-networking-04
+title: "Networking at TechCrunch Disrupt"
+description: "Make meaningful connections at a major tech conference"
+context_triggers:
+  time: any
+  location: social
+  duration_max_sec: 360
+goals:
+  - "Start conversations naturally"
+  - "Give your elevator pitch smoothly"
+  - "Find mutual value, not just take"
+  - "Follow up authentically"
+steps:
+  - type: speak_check
+    prompt: "Approach someone at the coffee station:"
+    content: "Hey, I'm Alex. First time at Disrupt—it's overwhelming in the best way. What brings you here?"
+    ref_text: "Hey I'm Alex First time at Disrupt it's overwhelming in the best way What brings you here"
+    hints:
+      - "Be friendly and casual"
+      - "Show vulnerability (first time)"
+      - "Ask open-ended questions"
+
+  - type: listen
+    prompt: "Listen to their response:"
+    content: "I'm Sarah, VP of Eng at DataCo. We're checking out the AI startups in the expo hall. You?"
+
+  - type: speak_check
+    prompt: "Share your story briefly:"
+    content: "I'm building an AI workflow automation platform. We help teams cut manual work by 40%. We're pre-seed but growing fast—15 customers in 6 months."
+    ref_text: "I'm building an AI workflow automation platform We help teams cut manual work by forty percent We're pre seed but growing fast fifteen customers in six months"
+    hints:
+      - "One sentence: what you do"
+      - "One sentence: traction"
+      - "Keep it conversational"
+
+  - type: listen
+    prompt: "Listen to their interest:"
+    content: "Interesting. We're actually struggling with workflow inefficiencies on our team. Tell me more."
+
+  - type: speak_check
+    prompt: "Offer value, not a hard sell:"
+    content: "I'd love to learn more about your challenges. We're doing customer discovery calls this month—happy to chat, no strings attached. Can I send you a calendar link?"
+    ref_text: "I'd love to learn more about your challenges We're doing customer discovery calls this month happy to chat no strings attached Can I send you a calendar link"
+    hints:
+      - "Lead with curiosity"
+      - "Offer value first"
+      - "Make the ask clear and easy"
+
+  - type: contrast
+    prompt: "Which networking approach feels more authentic?"
+    answers:
+      - "Let's exchange LinkedIn profiles. I'd love to stay in touch and learn more about your work."
+      - "You should totally invest in my startup. We're going to be huge."
+      - "Here's my business card. Call me if you want to buy something."
+
+  - type: apply_to_life
+    prompt: "Practice: Introduce yourself to someone new and find common ground"
+
+rehearsal:
+  decay_alpha: 0.86
+  next_ping_sec_min: 3600
+  next_ping_sec_max: 604800

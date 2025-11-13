@@ -4,6 +4,7 @@ description: "Build the practical skills of a world traveler and international p
 
 difficulty: beginner
 estimated_duration_weeks: 2
+access_level: premium
 
 scenes:
   - airport-lounge-01.yaml

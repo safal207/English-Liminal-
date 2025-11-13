@@ -1,0 +1,53 @@
+id: async-standup-01
+title: "Async Standup Update"
+description: "Write a clear, concise standup update in Slack for your distributed team"
+context_triggers:
+  time: morning
+  location: work
+  duration_max_sec: 240
+goals:
+  - "Communicate progress clearly"
+  - "Highlight blockers without being negative"
+  - "Keep it concise and actionable"
+steps:
+  - type: speak_check
+    prompt: "Write your 'Yesterday' update:"
+    content: "Yesterday: Finished the authentication refactor. All tests passing. Opened PR #247 for review."
+    ref_text: "Yesterday Finished the authentication refactor All tests passing Opened PR two forty seven for review"
+    hints:
+      - "Use past tense"
+      - "Be specific (PR numbers, feature names)"
+      - "Focus on outcomes, not activities"
+
+  - type: speak_check
+    prompt: "Write your 'Today' update:"
+    content: "Today: Starting work on the dashboard performance optimization. Will profile the slow queries and implement caching."
+    ref_text: "Today Starting work on the dashboard performance optimization Will profile the slow queries and implement caching"
+    hints:
+      - "Use present continuous or future"
+      - "Mention concrete tasks"
+      - "Show your plan, not just the goal"
+
+  - type: speak_check
+    prompt: "Write your 'Blockers' update (you have a blocker):"
+    content: "Blockers: Waiting on API key from DevOps team to test the third-party integration. Pinged them yesterday, following up today."
+    ref_text: "Blockers Waiting on API key from DevOps team to test the third party integration Pinged them yesterday following up today"
+    hints:
+      - "State the blocker clearly"
+      - "Mention what you've already done"
+      - "Show ownership of follow-up"
+
+  - type: contrast
+    prompt: "Which standup update is most helpful to the team?"
+    answers:
+      - "Yesterday: Fixed bugs. Today: More bugs. Blockers: None."
+      - "Yesterday: Resolved login timeout issue (#203). Today: Refactoring user service. Blockers: Need DB schema review from Sarah."
+      - "I worked really hard yesterday on a bunch of stuff. I'll keep working today. No problems."
+
+  - type: apply_to_life
+    prompt: "Write a standup update for what YOU worked on today"
+
+rehearsal:
+  decay_alpha: 0.82
+  next_ping_sec_min: 43200
+  next_ping_sec_max: 86400

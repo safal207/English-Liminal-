@@ -1,0 +1,79 @@
+id: objection-handling-03
+title: "Turning Objections into Opportunities"
+description: "Handle common sales objections with confidence and empathy"
+context_triggers:
+  time: any
+  location: work
+  duration_max_sec: 420
+goals:
+  - "Listen without interrupting"
+  - "Validate their concern"
+  - "Reframe the objection"
+  - "Provide social proof"
+steps:
+  - type: listen
+    prompt: "Listen to the objection (Price):"
+    content: "This looks great, but it's way over our budget. We're looking at tools that cost half as much."
+
+  - type: speak_check
+    prompt: "Validate and clarify:"
+    content: "I hear you—budget is important. Can I ask: what's the cost of the problem you're solving? Like, what's a missed deal worth to your business?"
+    ref_text: "I hear you budget is important Can I ask what's the cost of the problem you're solving Like what's a missed deal worth to your business"
+    hints:
+      - "Don't get defensive"
+      - "Acknowledge their concern"
+      - "Reframe cost vs. value"
+
+  - type: listen
+    prompt: "Listen to their response:"
+    content: "Fair point. An average deal is worth $50K, and we're losing maybe 5 deals a quarter due to follow-up issues."
+
+  - type: speak_check
+    prompt: "Reframe with ROI:"
+    content: "So that's $250K in revenue slipping away every quarter. Our tool costs $2K a month, or $24K a year. If we help you close just one extra deal, you've paid for the tool ten times over. Does that math make sense?"
+    ref_text: "So that's two hundred fifty thousand dollars in revenue slipping away every quarter Our tool costs two thousand dollars a month or twenty four thousand dollars a year If we help you close just one extra deal you've paid for the tool ten times over Does that math make sense"
+    hints:
+      - "Use their numbers, not yours"
+      - "Show ROI clearly"
+      - "Make it a no-brainer"
+
+  - type: listen
+    prompt: "Listen to the next objection (Timing):"
+    content: "Okay, that makes sense. But we're in the middle of Q4 crunch. Can we revisit this in Q1?"
+
+  - type: speak_check
+    prompt: "Create urgency without being pushy:"
+    content: "I totally understand Q4 is busy. But here's the thing: Q4 is when you're most at risk of losing deals. What if we start with a pilot—just your top 3 reps—so you can see results before Q1?"
+    ref_text: "I totally understand Q4 is busy But here's the thing Q4 is when you're most at risk of losing deals What if we start with a pilot just your top three reps so you can see results before Q1"
+    hints:
+      - "Empathize first"
+      - "Flip timing to your advantage"
+      - "Offer a low-risk compromise"
+
+  - type: listen
+    prompt: "Listen to the final objection (Trust):"
+    content: "I don't know. We've tried tools before and they didn't work out."
+
+  - type: speak_check
+    prompt: "Provide social proof and guarantee:"
+    content: "I get it—you've been burned before. Let me share: Acme Corp had the same concern. They ran a pilot, and within 30 days, their close rate went up 18%. We also offer a 60-day money-back guarantee, so there's zero risk."
+    ref_text: "I get it you've been burned before Let me share Acme Corp had the same concern They ran a pilot and within thirty days their close rate went up eighteen percent We also offer a sixty day money back guarantee so there's zero risk"
+    hints:
+      - "Validate their skepticism"
+      - "Use case studies"
+      - "Remove risk with guarantees"
+
+  - type: contrast
+    prompt: "Which objection handling approach builds more trust?"
+    answers:
+      - "I understand your concern. Let me show you how we've helped companies like yours overcome this exact issue."
+      - "That's not a real objection. You're just making excuses."
+      - "Okay, I'll give you a discount. Will you buy now?"
+
+  - type: apply_to_life
+    prompt: "Practice: Think of a time someone objected to your idea. How could you have reframed it?"
+
+rehearsal:
+  decay_alpha: 0.91
+  next_ping_sec_min: 7200
+  next_ping_sec_max: 432000

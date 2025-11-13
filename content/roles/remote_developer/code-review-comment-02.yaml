@@ -1,0 +1,54 @@
+id: code-review-comment-02
+title: "Constructive Code Review"
+description: "Leave helpful, respectful feedback on a teammate's pull request"
+context_triggers:
+  time: any
+  location: work
+  duration_max_sec: 300
+goals:
+  - "Be specific, not vague"
+  - "Use collaborative language"
+  - "Explain the 'why' behind suggestions"
+  - "Balance criticism with positivity"
+steps:
+  - type: speak_check
+    prompt: "Start with positive feedback:"
+    content: "Nice work on this feature! The component structure is clean, and I like how you handled edge cases in the validation."
+    ref_text: "Nice work on this feature The component structure is clean and I like how you handled edge cases in the validation"
+    hints:
+      - "Be genuine, not generic"
+      - "Point out specific strengths"
+      - "Set a positive tone"
+
+  - type: speak_check
+    prompt: "Suggest an improvement (performance concern):"
+    content: "One thing to consider: the loop on line 47 runs O(n²). We could optimize this with a hash map to bring it down to O(n). What do you think?"
+    ref_text: "One thing to consider the loop on line forty seven runs O n squared We could optimize this with a hash map to bring it down to O n What do you think"
+    hints:
+      - "Use 'we' language, not 'you'"
+      - "Explain the impact"
+      - "Ask for their input"
+
+  - type: speak_check
+    prompt: "Point out a potential bug:"
+    content: "I noticed on line 82, we're not handling the case where `user` might be null. This could cause a crash. Should we add a null check or throw a more descriptive error?"
+    ref_text: "I noticed on line eighty two we're not handling the case where user might be null This could cause a crash Should we add a null check or throw a more descriptive error"
+    hints:
+      - "Use 'I noticed' instead of 'You forgot'"
+      - "Explain the consequence"
+      - "Offer alternatives"
+
+  - type: contrast
+    prompt: "Which code review comment is most constructive?"
+    answers:
+      - "This code is terrible. Rewrite it."
+      - "Have you considered using a Set instead of an array here? It would improve lookup performance from O(n) to O(1)."
+      - "I don't like this approach."
+
+  - type: apply_to_life
+    prompt: "Practice: Give constructive feedback on something you reviewed recently"
+
+rehearsal:
+  decay_alpha: 0.85
+  next_ping_sec_min: 3600
+  next_ping_sec_max: 259200

@@ -1,0 +1,67 @@
+id: pair-programming-03
+title: "Pair Programming Session"
+description: "Navigate a remote pair programming session as the driver"
+context_triggers:
+  time: any
+  location: work
+  duration_max_sec: 360
+goals:
+  - "Think aloud clearly"
+  - "Ask for help when stuck"
+  - "Explain your thought process"
+  - "Collaborate, don't just code"
+steps:
+  - type: speak_check
+    prompt: "Start the session and set context:"
+    content: "Okay, we're working on the search feature. Let me share my screen. The goal is to add fuzzy matching to improve results. I'm thinking we use the Levenshtein distance algorithm. Sound good?"
+    ref_text: "Okay we're working on the search feature Let me share my screen The goal is to add fuzzy matching to improve results I'm thinking we use the Levenshtein distance algorithm Sound good"
+    hints:
+      - "State the objective clearly"
+      - "Share your initial approach"
+      - "Get buy-in from your pair"
+
+  - type: speak_check
+    prompt: "Think aloud as you code:"
+    content: "I'm going to create a helper function called `calculateDistance`. It'll take two strings and return a number. Let me start with the base case: if either string is empty, the distance equals the length of the other string."
+    ref_text: "I'm going to create a helper function called calculateDistance It'll take two strings and return a number Let me start with the base case if either string is empty the distance equals the length of the other string"
+    hints:
+      - "Explain what you're doing before doing it"
+      - "Use simple language"
+      - "Break it into steps"
+
+  - type: listen
+    prompt: "Listen to your pair's suggestion:"
+    content: "What if we use a library like Fuse.js instead of implementing this from scratch? It's battle-tested and has better performance."
+
+  - type: speak_check
+    prompt: "Respond to feedback:"
+    content: "Oh, good point. I didn't think of that. Let me look up Fuse.js. Saves us from reinventing the wheel, and we can ship faster. Let's go with that."
+    ref_text: "Oh good point I didn't think of that Let me look up Fuse dot js Saves us from reinventing the wheel and we can ship faster Let's go with that"
+    hints:
+      - "Be open to feedback"
+      - "Acknowledge good ideas"
+      - "Adapt quickly"
+
+  - type: speak_check
+    prompt: "Ask for help when stuck:"
+    content: "Hmm, I'm not sure how to configure the threshold parameter here. Have you used Fuse.js before? What value usually works well?"
+    ref_text: "Hmm I'm not sure how to configure the threshold parameter here Have you used Fuse dot js before What value usually works well"
+    hints:
+      - "Admit when you don't know"
+      - "Ask specific questions"
+      - "Leverage your pair's expertise"
+
+  - type: contrast
+    prompt: "Which pair programming behavior is most collaborative?"
+    answers:
+      - "I'm stuck. Can you take over and show me how you'd do this?"
+      - "Just let me code in silence. I'll tell you when I'm done."
+      - "Let me think aloud: I'm considering two approaches. What do you think?"
+
+  - type: apply_to_life
+    prompt: "Practice: Explain a coding decision you made recently"
+
+rehearsal:
+  decay_alpha: 0.87
+  next_ping_sec_min: 7200
+  next_ping_sec_max: 432000

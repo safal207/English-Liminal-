@@ -1,0 +1,67 @@
+id: pivot-meeting-05
+title: "Announcing the Pivot"
+description: "Communicate a major strategic pivot to your investors and team"
+context_triggers:
+  time: any
+  location: work
+  duration_max_sec: 540
+goals:
+  - "Explain the 'why' with data"
+  - "Show you're learning, not failing"
+  - "Rebuild confidence in the new direction"
+  - "Get buy-in from stakeholders"
+steps:
+  - type: speak_check
+    prompt: "Open the meeting with transparency:"
+    content: "I want to share an update on our strategy. After 6 months of customer feedback and data analysis, we're making a significant pivot. Here's why."
+    ref_text: "I want to share an update on our strategy After six months of customer feedback and data analysis we're making a significant pivot Here's why"
+    hints:
+      - "Lead with honesty"
+      - "Frame pivot as data-driven"
+      - "Set clear expectations"
+
+  - type: speak_check
+    prompt: "Present the data:"
+    content: "Our original hypothesis was that SMBs need workflow automation. But 80% of our revenue comes from enterprises. They're willing to pay 10x more, and our CAC is 3x lower in that segment."
+    ref_text: "Our original hypothesis was that SMBs need workflow automation But eighty percent of our revenue comes from enterprises They're willing to pay ten times more and our CAC is three times lower in that segment"
+    hints:
+      - "Use concrete numbers"
+      - "Show market pull, not push"
+      - "Make the business case clear"
+
+  - type: speak_check
+    prompt: "Articulate the new vision:"
+    content: "We're pivoting to enterprise sales. Same core product, but tailored for large teams with compliance and security needs. We're already in talks with three Fortune 500 companies."
+    ref_text: "We're pivoting to enterprise sales Same core product but tailored for large teams with compliance and security needs We're already in talks with three Fortune five hundred companies"
+    hints:
+      - "Keep the core value proposition"
+      - "Show early traction"
+      - "Be specific about the pivot"
+
+  - type: listen
+    prompt: "Listen to an investor's concern:"
+    content: "Pivoting is risky. How do you know this will work?"
+
+  - type: speak_check
+    prompt: "Address concerns with confidence:"
+    content: "Every startup pivots. Slack started as a gaming company. What matters is learning fast and adapting. We've validated this with paying customers, not just hypotheses. I'm confident this is the right move."
+    ref_text: "Every startup pivots Slack started as a gaming company What matters is learning fast and adapting We've validated this with paying customers not just hypotheses I'm confident this is the right move"
+    hints:
+      - "Use industry examples"
+      - "Reframe pivot as strength"
+      - "End with conviction"
+
+  - type: contrast
+    prompt: "Which pivot announcement inspires more confidence?"
+    answers:
+      - "We're pivoting because the data shows a better opportunity. We've already validated demand."
+      - "The original plan didn't work, so we're trying something new."
+      - "I don't know if this will work, but let's give it a shot."
+
+  - type: apply_to_life
+    prompt: "Practice: Explain a time you changed direction based on new information"
+
+rehearsal:
+  decay_alpha: 0.91
+  next_ping_sec_min: 1800
+  next_ping_sec_max: 432000

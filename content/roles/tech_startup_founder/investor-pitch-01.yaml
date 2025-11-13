@@ -1,0 +1,71 @@
+id: investor-pitch-01
+title: "The 3-Minute Investor Pitch"
+description: "Deliver a compelling pitch to potential investors at a demo day"
+context_triggers:
+  time: any
+  location: work
+  duration_max_sec: 600
+goals:
+  - "Hook attention in the first 10 seconds"
+  - "Articulate problem, solution, and traction clearly"
+  - "Project confidence and passion"
+  - "Handle investor questions smoothly"
+steps:
+  - type: listen
+    prompt: "Listen to the investor's opening:"
+    content: "You have three minutes. Tell me why I should invest in your company."
+
+  - type: speak_check
+    prompt: "Deliver your opening hook (problem statement):"
+    content: "Every year, companies waste $3 billion on inefficient workflows. We're building AI that cuts that waste by 40% in the first month."
+    ref_text: "Every year companies waste three billion dollars on inefficient workflows We're building AI that cuts that waste by forty percent in the first month"
+    hints:
+      - "Start with a shocking statistic"
+      - "Use concrete numbers"
+      - "Be concise and clear"
+
+  - type: speak_check
+    prompt: "Explain your solution:"
+    content: "Our platform integrates with existing tools and uses machine learning to identify bottlenecks, automate repetitive tasks, and surface actionable insights in real-time."
+    ref_text: "Our platform integrates with existing tools and uses machine learning to identify bottlenecks automate repetitive tasks and surface actionable insights in real time"
+    hints:
+      - "Focus on how, not just what"
+      - "Mention key technology buzzwords naturally"
+      - "Keep it jargon-light for non-technical investors"
+
+  - type: speak_check
+    prompt: "Share your traction:"
+    content: "We launched 6 months ago. We have 15 paying customers, $50K in monthly recurring revenue, and we're growing 25% month-over-month."
+    ref_text: "We launched six months ago We have fifteen paying customers fifty thousand dollars in monthly recurring revenue and we're growing twenty five percent month over month"
+    hints:
+      - "Numbers = credibility"
+      - "Show growth trajectory"
+      - "Be specific, not vague"
+
+  - type: listen
+    prompt: "Listen to the investor's follow-up question:"
+    content: "What's your customer acquisition cost compared to lifetime value?"
+
+  - type: speak_check
+    prompt: "Answer with confidence:"
+    content: "Our CAC is $2,000, and our LTV is $18,000, giving us a healthy 9-to-1 ratio. We're seeing strong organic growth through word-of-mouth."
+    ref_text: "Our CAC is two thousand dollars and our LTV is eighteen thousand dollars giving us a healthy nine to one ratio We're seeing strong organic growth through word of mouth"
+    hints:
+      - "Use acronyms naturally: CAC, LTV"
+      - "Frame the ratio positively"
+      - "Mention growth channels"
+
+  - type: contrast
+    prompt: "Which pitch ending leaves a stronger impression?"
+    answers:
+      - "We're raising $2M to scale our go-to-market and expand into enterprise. We'd love to have you on board."
+      - "So yeah, we need money to grow. Can you invest?"
+      - "I think we're doing pretty well, and maybe you could help us."
+
+  - type: apply_to_life
+    prompt: "Record a 30-second pitch for YOUR business idea or project"
+
+rehearsal:
+  decay_alpha: 0.92
+  next_ping_sec_min: 600
+  next_ping_sec_max: 172800

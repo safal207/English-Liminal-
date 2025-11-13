@@ -4,6 +4,7 @@ description: "Raise a family in a foreign country. Navigate parent-teacher conve
 
 difficulty: intermediate
 estimated_duration_weeks: 1
+access_level: premium
 
 scenes:
   - pick-up-kid-kindergarten-01.yaml

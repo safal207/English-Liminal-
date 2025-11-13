@@ -1,0 +1,58 @@
+id: tech-debt-discussion-04
+title: "Advocating for Tech Debt"
+description: "Make the case for refactoring to your product manager"
+context_triggers:
+  time: any
+  location: work
+  duration_max_sec: 420
+goals:
+  - "Frame tech debt in business terms"
+  - "Quantify the impact"
+  - "Propose a balanced solution"
+  - "Get buy-in from non-technical stakeholders"
+steps:
+  - type: speak_check
+    prompt: "Open the conversation:"
+    content: "Hey Sarah, I want to discuss the authentication module. We've been patching it for months, and it's slowing down feature development. I think we should refactor it."
+    ref_text: "Hey Sarah I want to discuss the authentication module We've been patching it for months and it's slowing down feature development I think we should refactor it"
+    hints:
+      - "Start with the problem"
+      - "Connect to business impact (velocity)"
+      - "State your proposal clearly"
+
+  - type: listen
+    prompt: "Listen to the PM's concern:"
+    content: "I get it, but we have a tight deadline for the enterprise features. Can this wait?"
+
+  - type: speak_check
+    prompt: "Quantify the impact:"
+    content: "I hear you. But here's the thing: right now, every auth-related feature takes 3x longer to build because of the messy code. If we refactor, we'll ship enterprise features faster. It's a 2-week investment that saves us months."
+    ref_text: "I hear you But here's the thing right now every auth related feature takes three times longer to build because of the messy code If we refactor we'll ship enterprise features faster It's a two week investment that saves us months"
+    hints:
+      - "Use concrete numbers (3x longer)"
+      - "Tie tech debt to business goals"
+      - "Frame as investment, not cost"
+
+  - type: speak_check
+    prompt: "Propose a compromise:"
+    content: "How about this: We refactor in parallel with the enterprise work. I'll take one sprint to clean up the core, and we'll unblock the team for future features. Deal?"
+    ref_text: "How about this We refactor in parallel with the enterprise work I'll take one sprint to clean up the core and we'll unblock the team for future features Deal"
+    hints:
+      - "Offer a middle ground"
+      - "Show you understand priorities"
+      - "Make it time-boxed"
+
+  - type: contrast
+    prompt: "Which argument for tech debt is most persuasive to a PM?"
+    answers:
+      - "The code is ugly and I hate working on it. We need to rewrite everything."
+      - "Refactoring will reduce our bug rate by 40% and speed up feature development by 30%. Here's the data from similar refactors."
+      - "Trust me, this is important. Just give me time to fix it."
+
+  - type: apply_to_life
+    prompt: "Practice: Explain a technical improvement in business terms"
+
+rehearsal:
+  decay_alpha: 0.88
+  next_ping_sec_min: 10800
+  next_ping_sec_max: 604800

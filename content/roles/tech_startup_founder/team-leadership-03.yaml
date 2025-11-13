@@ -1,0 +1,58 @@
+id: team-leadership-03
+title: "Leading Through Uncertainty"
+description: "Rally your team during a difficult period with cash runway concerns"
+context_triggers:
+  time: any
+  location: work
+  duration_max_sec: 420
+goals:
+  - "Be transparent but optimistic"
+  - "Inspire action, not panic"
+  - "Show empathy for team concerns"
+  - "Communicate a clear plan forward"
+steps:
+  - type: listen
+    prompt: "Listen to your team's concern during the all-hands meeting:"
+    content: "We've heard rumors about the funding round falling through. Should we be worried?"
+
+  - type: speak_check
+    prompt: "Address the concern head-on:"
+    content: "I appreciate you bringing that up. Yes, we hit a snag with one investor, but we have strong interest from two others. More importantly, we have 8 months of runway, and our revenue is growing."
+    ref_text: "I appreciate you bringing that up Yes we hit a snag with one investor but we have strong interest from two others More importantly we have eight months of runway and our revenue is growing"
+    hints:
+      - "Acknowledge the concern"
+      - "Be honest but frame positively"
+      - "Provide concrete data"
+
+  - type: speak_check
+    prompt: "Lay out the plan:"
+    content: "Here's the plan: We're doubling down on sales this quarter. If we hit our revenue target, we'll be default alive by Q3. I need everyone focused on shipping features that drive conversions."
+    ref_text: "Here's the plan We're doubling down on sales this quarter If we hit our revenue target we'll be default alive by Q3 I need everyone focused on shipping features that drive conversions"
+    hints:
+      - "Use clear, actionable language"
+      - "Set specific goals"
+      - "Rally around shared mission"
+
+  - type: speak_check
+    prompt: "Inspire confidence:"
+    content: "I've been in tougher spots before. This team is incredible, and our product is solving real problems. Let's focus on what we can control—building and selling. Who's with me?"
+    ref_text: "I've been in tougher spots before This team is incredible and our product is solving real problems Let's focus on what we can control building and selling Who's with me"
+    hints:
+      - "Show vulnerability and strength"
+      - "Praise the team"
+      - "End with a call to action"
+
+  - type: contrast
+    prompt: "Which leadership approach builds more trust?"
+    answers:
+      - "I won't sugarcoat it—things are tough. But I have a plan, and I need your help to execute it."
+      - "Everything is fine, don't worry about it. Just keep working."
+      - "If this doesn't work out, we'll all find new jobs anyway."
+
+  - type: apply_to_life
+    prompt: "Practice: Deliver a 30-second motivational message to your team"
+
+rehearsal:
+  decay_alpha: 0.90
+  next_ping_sec_min: 1200
+  next_ping_sec_max: 345600

@@ -1,0 +1,88 @@
+id: negotiation-close-04
+title: "Negotiating and Closing the Deal"
+description: "Navigate contract negotiations and close with confidence"
+context_triggers:
+  time: any
+  location: work
+  duration_max_sec: 480
+goals:
+  - "Anchor on value, not price"
+  - "Trade, don't give"
+  - "Ask for the close directly"
+  - "Handle final hesitations"
+steps:
+  - type: listen
+    prompt: "Listen to the procurement request:"
+    content: "We're interested, but we need a 30% discount to get this approved."
+
+  - type: speak_check
+    prompt: "Anchor on value and explore the ask:"
+    content: "I appreciate you being direct. Before we talk numbers, help me understand: what's driving the 30% ask? Is it budget constraints, or is there something about the value that's not clicking?"
+    ref_text: "I appreciate you being direct Before we talk numbers help me understand what's driving the thirty percent ask Is it budget constraints or is there something about the value that's not clicking"
+    hints:
+      - "Don't immediately say yes or no"
+      - "Dig into the 'why'"
+      - "Protect your value proposition"
+
+  - type: listen
+    prompt: "Listen to their reasoning:"
+    content: "Honestly, we have budget, but procurement always pushes for discounts. It's standard practice."
+
+  - type: speak_check
+    prompt: "Trade, don't give:"
+    content: "Got it. I can't do 30%, but here's what I can do: if you commit to an annual contract instead of quarterly, I can offer 15% off. That saves you money and gives us predictability. Sound fair?"
+    ref_text: "Got it I can't do thirty percent but here's what I can do if you commit to an annual contract instead of quarterly I can offer fifteen percent off That saves you money and gives us predictability Sound fair"
+    hints:
+      - "Offer a trade (annual vs. discount)"
+      - "Frame it as mutual benefit"
+      - "Stay firm but flexible"
+
+  - type: listen
+    prompt: "Listen to their consideration:"
+    content: "15% works if we can add 5 more user licenses without extra cost."
+
+  - type: speak_check
+    prompt: "Counter with a smaller give:"
+    content: "I can include 3 extra licenses at no cost, but 5 would push us over the line. Does 3 work, and we revisit licenses in 6 months when you're ready to scale?"
+    ref_text: "I can include three extra licenses at no cost but five would push us over the line Does three work and we revisit licenses in six months when you're ready to scale"
+    hints:
+      - "Give a little, not everything"
+      - "Set boundaries"
+      - "Offer a future path"
+
+  - type: speak_check
+    prompt: "Ask for the close:"
+    content: "So to recap: annual contract, 15% discount, 3 bonus licenses. If I send over the paperwork today, can we get this signed by Friday?"
+    ref_text: "So to recap annual contract fifteen percent discount three bonus licenses If I send over the paperwork today can we get this signed by Friday"
+    hints:
+      - "Summarize the deal"
+      - "Ask directly for the close"
+      - "Set a deadline"
+
+  - type: listen
+    prompt: "Listen to final hesitation:"
+    content: "Let me run it by my VP and get back to you next week."
+
+  - type: speak_check
+    prompt: "Create gentle urgency:"
+    content: "Totally fair. Quick question: is there anything holding you back that I can address now? Also, this pricing is only good through end of month, so if you can confirm by Friday, we're locked in."
+    ref_text: "Totally fair Quick question is there anything holding you back that I can address now Also this pricing is only good through end of month so if you can confirm by Friday we're locked in"
+    hints:
+      - "Uncover hidden objections"
+      - "Use deadline without pressure"
+      - "Stay helpful, not pushy"
+
+  - type: contrast
+    prompt: "Which closing approach is most professional?"
+    answers:
+      - "Are we good to move forward? I'll send the contract today."
+      - "If you don't sign now, the price goes up."
+      - "Just think about it and let me know whenever."
+
+  - type: apply_to_life
+    prompt: "Practice: Ask for something you want directly and confidently"
+
+rehearsal:
+  decay_alpha: 0.92
+  next_ping_sec_min: 10800
+  next_ping_sec_max: 604800

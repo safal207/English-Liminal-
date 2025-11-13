@@ -1,0 +1,62 @@
+id: customer-discovery-02
+title: "Customer Discovery Interview"
+description: "Conduct a customer discovery call to validate your product assumptions"
+context_triggers:
+  time: any
+  location: work
+  duration_max_sec: 480
+goals:
+  - "Ask open-ended questions"
+  - "Listen more than you talk"
+  - "Validate assumptions without leading"
+  - "Extract real pain points"
+steps:
+  - type: speak_check
+    prompt: "Start the conversation:"
+    content: "Thanks for taking the time. I'm working on a solution for workflow automation, but first I want to understand your current process. Walk me through how you handle daily tasks."
+    ref_text: "Thanks for taking the time I'm working on a solution for workflow automation but first I want to understand your current process Walk me through how you handle daily tasks"
+    hints:
+      - "Start with gratitude"
+      - "Frame it as learning, not selling"
+      - "Ask open-ended questions"
+
+  - type: listen
+    prompt: "Listen to the customer's response:"
+    content: "Well, I use spreadsheets mostly. It's tedious but it works. I spend about 3 hours a day just updating data."
+
+  - type: speak_check
+    prompt: "Dig deeper with a follow-up question:"
+    content: "Three hours daily—that's significant. What's the most frustrating part of that process?"
+    ref_text: "Three hours daily that's significant What's the most frustrating part of that process"
+    hints:
+      - "Reflect back what you heard"
+      - "Show empathy"
+      - "Probe for pain points"
+
+  - type: listen
+    prompt: "Listen to the pain point:"
+    content: "Honestly, the manual data entry. One mistake cascades into hours of debugging. And there's no way to track changes."
+
+  - type: speak_check
+    prompt: "Validate the pain point:"
+    content: "So accuracy and auditability are major concerns. Have you tried any tools to solve this?"
+    ref_text: "So accuracy and auditability are major concerns Have you tried any tools to solve this"
+    hints:
+      - "Summarize in their own words"
+      - "Ask about existing solutions"
+      - "Don't pitch yet—just listen"
+
+  - type: contrast
+    prompt: "Which question leads to better insights?"
+    answers:
+      - "What would need to happen for you to switch from spreadsheets to a new solution?"
+      - "Would you pay $50/month for a tool that solves this?"
+      - "Our product does exactly what you need. Want to see a demo?"
+
+  - type: apply_to_life
+    prompt: "Practice: Ask an open-ended question about a problem someone faces at work"
+
+rehearsal:
+  decay_alpha: 0.88
+  next_ping_sec_min: 1800
+  next_ping_sec_max: 259200

@@ -4,6 +4,7 @@ description: "Navigate the professional world as a Quality Assurance engineer in
 
 difficulty: intermediate
 estimated_duration_weeks: 3
+access_level: free
 
 scenes:
   - qa-interview-01.yaml
