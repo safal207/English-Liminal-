@@ -1,0 +1,143 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      version: ${{ steps.get_version.outputs.version }}
+
+    steps:
+    - name: Get version from tag
+      id: get_version
+      run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+        body: |
+          ## English-Liminal ${{ steps.get_version.outputs.version }}
+
+          ### What's New
+          - See CHANGELOG.md for details
+
+          ### Downloads
+          - Linux: liminal-cli-linux-x86_64
+          - macOS: liminal-cli-macos-x86_64
+          - Windows: liminal-cli-windows-x86_64.exe
+
+  build-linux:
+    name: Build Linux
+    needs: create-release
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Build release
+      run: cd core && cargo build --release --verbose
+
+    - name: Strip binary
+      run: strip core/target/release/liminal_cli
+
+    - name: Create archive
+      run: |
+        cd core/target/release
+        tar czf liminal-cli-linux-x86_64.tar.gz liminal_cli
+        mv liminal-cli-linux-x86_64.tar.gz ../../../
+
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: ./liminal-cli-linux-x86_64.tar.gz
+        asset_name: liminal-cli-linux-x86_64.tar.gz
+        asset_content_type: application/gzip
+
+  build-macos:
+    name: Build macOS
+    needs: create-release
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Build release
+      run: cd core && cargo build --release --verbose
+
+    - name: Strip binary
+      run: strip core/target/release/liminal_cli
+
+    - name: Create archive
+      run: |
+        cd core/target/release
+        tar czf liminal-cli-macos-x86_64.tar.gz liminal_cli
+        mv liminal-cli-macos-x86_64.tar.gz ../../../
+
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: ./liminal-cli-macos-x86_64.tar.gz
+        asset_name: liminal-cli-macos-x86_64.tar.gz
+        asset_content_type: application/gzip
+
+  build-windows:
+    name: Build Windows
+    needs: create-release
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Build release
+      run: cd core && cargo build --release --verbose
+
+    - name: Create archive
+      run: |
+        cd core/target/release
+        7z a liminal-cli-windows-x86_64.zip liminal_cli.exe
+        mv liminal-cli-windows-x86_64.zip ../../../
+      shell: bash
+
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: ./liminal-cli-windows-x86_64.zip
+        asset_name: liminal-cli-windows-x86_64.zip
+        asset_content_type: application/zip

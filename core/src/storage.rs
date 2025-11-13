@@ -408,7 +408,7 @@ impl Store {
 
     pub fn save_resonance_trace(&self, trace: &ResonanceTrace) -> Result<()> {
         self.conn.execute(
-            "INSERT INTO resonance_traces(id, role_id, scene_id, message, created_at) VALUES(?1, ?2, ?3, ?4, ?5)",
+            "INSERT OR REPLACE INTO resonance_traces(id, role_id, scene_id, message, created_at) VALUES(?1, ?2, ?3, ?4, ?5)",
             params![
                 trace.id,
                 trace.role_id,
