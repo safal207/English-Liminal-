@@ -1,6 +1,8 @@
 use liminal_english_core::api::*;
 
 // Helper macro to create isolated test databases with unique names
+// Note: These tests must run with --test-threads=1 to avoid race conditions
+// in the global STORE singleton
 macro_rules! init_test_storage {
     ($test_name:expr) => {{
         use std::sync::atomic::{AtomicUsize, Ordering};
@@ -8,6 +10,7 @@ macro_rules! init_test_storage {
         let count = COUNTER.fetch_add(1, Ordering::SeqCst);
         let db_path = format!("/tmp/{}_{}_{}.db", $test_name, std::process::id(), count);
         std::fs::remove_file(&db_path).ok(); // Clean up if exists
+
         let result = init_storage(db_path.clone());
         // Schedule cleanup (best effort)
         std::thread::spawn(move || {
