@@ -25,18 +25,13 @@ pub struct Role {
     pub difficulty: Difficulty,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "lowercase")]
 pub enum Difficulty {
     Beginner,
+    #[default]
     Intermediate,
     Advanced,
-}
-
-impl Default for Difficulty {
-    fn default() -> Self {
-        Difficulty::Intermediate
-    }
 }
 
 /// Role Coherence Score: measures how naturally user embodies the role
