@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 pub struct MemoryLink {
     pub phrase: String,
     pub last_seen: DateTime<Utc>,
-    pub wave: f32,       // 0..1
+    pub wave: f32,        // 0..1
     pub decay_alpha: f32, // 0.7..0.9
     pub success_count: u32,
     pub fail_count: u32,

@@ -1,5 +1,23 @@
 use liminal_english_core::api::*;
 
+// Helper macro to create isolated test databases with unique names
+macro_rules! init_test_storage {
+    ($test_name:expr) => {{
+        use std::sync::atomic::{AtomicUsize, Ordering};
+        static COUNTER: AtomicUsize = AtomicUsize::new(0);
+        let count = COUNTER.fetch_add(1, Ordering::SeqCst);
+        let db_path = format!("/tmp/{}_{}_{}.db", $test_name, std::process::id(), count);
+        std::fs::remove_file(&db_path).ok(); // Clean up if exists
+        let result = init_storage(db_path.clone());
+        // Schedule cleanup (best effort)
+        std::thread::spawn(move || {
+            std::thread::sleep(std::time::Duration::from_secs(2));
+            std::fs::remove_file(&db_path).ok();
+        });
+        result
+    }};
+}
+
 #[test]
 fn test_ffi_health_check() {
     let result = health_check();
@@ -8,15 +26,14 @@ fn test_ffi_health_check() {
 
 #[test]
 fn test_ffi_storage_initialization() {
-    let db_path = ":memory:";
-    let result = init_storage(db_path.to_string());
+    let result = init_test_storage!("test_ffi_storage_initialization");
     assert!(result.is_ok());
 }
 
 #[test]
 fn test_ffi_role_progress_flow() {
     // Initialize storage
-    init_storage(":memory:".to_string()).expect("Failed to init storage");
+    init_test_storage!("test_ffi_role_progress_flow").expect("Failed to init storage");
 
     // Start role progress
     let role_id = "qa_engineer_abroad".to_string();
@@ -61,7 +78,7 @@ fn test_ffi_role_progress_flow() {
 
 #[test]
 fn test_ffi_resonance_traces() {
-    init_storage(":memory:".to_string()).expect("Failed to init storage");
+    init_test_storage!("test_ffi_resonance_traces").expect("Failed to init storage");
 
     // Create a trace
     let trace_id = "trace-001".to_string();
@@ -103,7 +120,7 @@ fn test_ffi_resonance_traces() {
 
 #[test]
 fn test_ffi_statistics() {
-    init_storage(":memory:".to_string()).expect("Failed to init storage");
+    init_test_storage!("test_ffi_statistics").expect("Failed to init storage");
 
     // Get initial stats
     let streak = get_streak();
@@ -117,7 +134,7 @@ fn test_ffi_statistics() {
 
 #[test]
 fn test_ffi_events() {
-    init_storage(":memory:".to_string()).expect("Failed to init storage");
+    init_test_storage!("test_ffi_events").expect("Failed to init storage");
 
     // Add event
     let result = add_event("test_event".to_string(), r#"{"data": "test"}"#.to_string());
@@ -135,7 +152,7 @@ fn test_ffi_events() {
 
 #[test]
 fn test_ffi_export_data() {
-    init_storage(":memory:".to_string()).expect("Failed to init storage");
+    init_test_storage!("test_ffi_export_data").expect("Failed to init storage");
 
     // Add some data
     add_event("warmup".to_string(), r#"{"completed": true}"#.to_string()).ok();
@@ -155,7 +172,7 @@ fn test_ffi_export_data() {
 
 #[test]
 fn test_ffi_consecutive_days_update() {
-    init_storage(":memory:".to_string()).expect("Failed to init storage");
+    init_test_storage!("test_ffi_consecutive_days_update").expect("Failed to init storage");
 
     let role_id = "test_role".to_string();
     start_role_progress(role_id.clone(), 3).ok();
@@ -175,7 +192,7 @@ fn test_ffi_consecutive_days_update() {
 
 #[test]
 fn test_ffi_liminal_transition() {
-    init_storage(":memory:".to_string()).expect("Failed to init storage");
+    init_test_storage!("test_ffi_liminal_transition").expect("Failed to init storage");
 
     let role_id = "qa_engineer_abroad".to_string();
     start_role_progress(role_id.clone(), 5).ok();
@@ -186,14 +203,16 @@ fn test_ffi_liminal_transition() {
         "scene1".to_string(),
         "Confident".to_string(),
         0.9,
-    ).ok();
+    )
+    .ok();
 
     complete_scene_with_emotion(
         role_id.clone(),
         "scene2".to_string(),
         "Calm".to_string(),
         0.85,
-    ).ok();
+    )
+    .ok();
 
     // Get liminal transition
     let result = get_liminal_transition_json(role_id.clone());
@@ -205,7 +224,7 @@ fn test_ffi_liminal_transition() {
 
 #[test]
 fn test_ffi_json_serialization() {
-    init_storage(":memory:".to_string()).expect("Failed to init storage");
+    init_test_storage!("test_ffi_json_serialization").expect("Failed to init storage");
 
     let role_id = "test_role".to_string();
     let result = start_role_progress(role_id.clone(), 3);
@@ -247,7 +266,7 @@ fn test_ffi_json_serialization() {
 
 #[test]
 fn test_ffi_recent_traces_pagination() {
-    init_storage(":memory:".to_string()).expect("Failed to init storage");
+    init_test_storage!("test_ffi_recent_traces_pagination").expect("Failed to init storage");
 
     // Create multiple traces
     for i in 0..10 {
@@ -256,7 +275,8 @@ fn test_ffi_recent_traces_pagination() {
             "test_role".to_string(),
             format!("scene-{}", i),
             format!("Message {}", i),
-        ).ok();
+        )
+        .ok();
     }
 
     // Get recent traces with limit

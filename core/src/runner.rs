@@ -39,7 +39,10 @@ impl RunnerState {
     }
 
     pub fn current_step_type(&self, script: &Script) -> Option<StepType> {
-        script.steps.get(self.current_index).map(|s| s.r#type.clone())
+        script
+            .steps
+            .get(self.current_index)
+            .map(|s| s.r#type.clone())
     }
 
     pub fn current_step<'a>(&self, script: &'a Script) -> Option<&'a crate::scripts::Step> {
@@ -55,7 +58,7 @@ impl RunnerState {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::scripts::{Script, Step, StepType, Rehearsal};
+    use crate::scripts::{Rehearsal, Script, Step, StepType};
 
     fn mock_script() -> Script {
         Script {

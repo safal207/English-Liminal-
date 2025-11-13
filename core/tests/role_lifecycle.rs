@@ -1,12 +1,29 @@
-use liminal_english_core::{
-    EmotionTag, RoleProgress, Store, ResonanceTrace, Reflection,
-};
 use chrono::Utc;
+use liminal_english_core::{EmotionTag, Reflection, ResonanceTrace, RoleProgress, Store};
+
+// Helper macro to create isolated test databases with unique names
+macro_rules! open_test_store {
+    ($test_name:expr) => {{
+        use std::sync::atomic::{AtomicUsize, Ordering};
+        static COUNTER: AtomicUsize = AtomicUsize::new(0);
+        let count = COUNTER.fetch_add(1, Ordering::SeqCst);
+        let db_path = format!("/tmp/{}_{}_{}.db", $test_name, std::process::id(), count);
+        std::fs::remove_file(&db_path).ok(); // Clean up if exists
+        let store = Store::open(&db_path);
+        // Schedule cleanup (best effort)
+        let path_clone = db_path.clone();
+        std::thread::spawn(move || {
+            std::thread::sleep(std::time::Duration::from_secs(2));
+            std::fs::remove_file(&path_clone).ok();
+        });
+        store
+    }};
+}
 
 #[test]
 fn test_complete_role_lifecycle() {
     // Setup: Create in-memory database
-    let store = Store::open(":memory:").expect("Failed to open store");
+    let store = open_test_store!("test_complete_role_lifecycle").expect("Failed to open store");
 
     // Step 1: Start a new role
     let role_id = "qa_engineer_abroad";
@@ -18,21 +35,21 @@ fn test_complete_role_lifecycle() {
     assert_eq!(progress.coherence, 0.0);
 
     // Step 2: Save initial progress
-    store.save_role_progress(&progress).expect("Failed to save progress");
+    store
+        .save_role_progress(&progress)
+        .expect("Failed to save progress");
 
     // Step 3: Complete first scene with emotion
-    let emotion1 = EmotionTag::new(
-        "qa-interview-01".to_string(),
-        "Nervous".to_string(),
-        0.7,
-    );
+    let emotion1 = EmotionTag::new("qa-interview-01".to_string(), "Nervous".to_string(), 0.7);
     progress.complete_scene(emotion1);
 
     assert_eq!(progress.current_scene_index, 1);
     assert_eq!(progress.emotion_tags.len(), 1);
 
     // Save progress
-    store.save_role_progress(&progress).expect("Failed to save progress");
+    store
+        .save_role_progress(&progress)
+        .expect("Failed to save progress");
 
     // Step 4: Complete more scenes with varying emotions
     let emotions = vec![
@@ -43,13 +60,11 @@ fn test_complete_role_lifecycle() {
     ];
 
     for (scene_id, tone, confidence) in emotions {
-        let emotion = EmotionTag::new(
-            scene_id.to_string(),
-            tone.to_string(),
-            confidence,
-        );
+        let emotion = EmotionTag::new(scene_id.to_string(), tone.to_string(), confidence);
         progress.complete_scene(emotion);
-        store.save_role_progress(&progress).expect("Failed to save progress");
+        store
+            .save_role_progress(&progress)
+            .expect("Failed to save progress");
     }
 
     // Step 5: Verify final state
@@ -64,7 +79,9 @@ fn test_complete_role_lifecycle() {
     assert!(progress.coherence <= 1.0);
 
     // Save final state with consecutive days
-    store.save_role_progress(&progress).expect("Failed to save final progress");
+    store
+        .save_role_progress(&progress)
+        .expect("Failed to save final progress");
 
     // Step 7: Load from database and verify
     let loaded = store
@@ -87,7 +104,7 @@ fn test_complete_role_lifecycle() {
 
 #[test]
 fn test_multiple_roles_isolation() {
-    let store = Store::open(":memory:").expect("Failed to open store");
+    let store = open_test_store!("test_multiple_roles_isolation").expect("Failed to open store");
 
     // Create progress for two different roles
     let mut qa_progress = RoleProgress::new("qa_engineer_abroad".to_string(), 5);
@@ -113,8 +130,12 @@ fn test_multiple_roles_isolation() {
     ));
 
     // Save both
-    store.save_role_progress(&qa_progress).expect("Failed to save QA progress");
-    store.save_role_progress(&visa_progress).expect("Failed to save Visa progress");
+    store
+        .save_role_progress(&qa_progress)
+        .expect("Failed to save QA progress");
+    store
+        .save_role_progress(&visa_progress)
+        .expect("Failed to save Visa progress");
 
     // Load and verify isolation
     let loaded_qa = store
@@ -135,7 +156,7 @@ fn test_multiple_roles_isolation() {
 
 #[test]
 fn test_social_resonance_flow() {
-    let store = Store::open(":memory:").expect("Failed to open store");
+    let store = open_test_store!("test_social_resonance_flow").expect("Failed to open store");
 
     // Create a resonance trace
     let trace = ResonanceTrace::new(
@@ -145,7 +166,9 @@ fn test_social_resonance_flow() {
         "First interview was tough but I pushed through!".to_string(),
     );
 
-    store.save_resonance_trace(&trace).expect("Failed to save trace");
+    store
+        .save_resonance_trace(&trace)
+        .expect("Failed to save trace");
 
     // Load trace
     let loaded_trace = store
@@ -155,7 +178,10 @@ fn test_social_resonance_flow() {
 
     assert_eq!(loaded_trace.id, "trace-001");
     assert_eq!(loaded_trace.role_id, "qa_engineer_abroad");
-    assert_eq!(loaded_trace.message, "First interview was tough but I pushed through!");
+    assert_eq!(
+        loaded_trace.message,
+        "First interview was tough but I pushed through!"
+    );
     assert_eq!(loaded_trace.reflections.len(), 0);
 
     // Add reflections
@@ -174,7 +200,9 @@ fn test_social_resonance_flow() {
     trace_with_reflections.add_reflection(reflection1);
     trace_with_reflections.add_reflection(reflection2);
 
-    store.save_resonance_trace(&trace_with_reflections).expect("Failed to save updated trace");
+    store
+        .save_resonance_trace(&trace_with_reflections)
+        .expect("Failed to save updated trace");
 
     // Reload and verify
     let final_trace = store
@@ -183,8 +211,14 @@ fn test_social_resonance_flow() {
         .expect("Trace not found");
 
     assert_eq!(final_trace.reflections.len(), 2);
-    assert_eq!(final_trace.reflections[0].message, "Same here! You're not alone.");
-    assert_eq!(final_trace.reflections[1].message, "Keep going, it gets easier!");
+    assert_eq!(
+        final_trace.reflections[0].message,
+        "Same here! You're not alone."
+    );
+    assert_eq!(
+        final_trace.reflections[1].message,
+        "Keep going, it gets easier!"
+    );
 }
 
 #[test]
@@ -234,7 +268,7 @@ fn test_coherence_calculation() {
 
 #[test]
 fn test_emotion_tag_persistence() {
-    let store = Store::open(":memory:").expect("Failed to open store");
+    let store = open_test_store!("test_emotion_tag_persistence").expect("Failed to open store");
     let role_id = "test_role";
 
     let mut progress = RoleProgress::new(role_id.to_string(), 3);
