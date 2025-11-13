@@ -114,6 +114,8 @@ pub enum Platform {
     AppStore,
     /// Google Play Store
     PlayStore,
+    /// SamCart checkout platform
+    SamCart,
     /// Direct purchase (web/other)
     Direct,
 }

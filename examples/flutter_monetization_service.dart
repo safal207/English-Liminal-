@@ -296,6 +296,7 @@ enum SubscriptionStatus {
 enum Platform {
   appStore,
   playStore,
+  samCart,
   direct;
 
   String toJson() => name;

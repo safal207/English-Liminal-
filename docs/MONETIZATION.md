@@ -26,7 +26,7 @@ The monetization system implements a **freemium** model with multiple revenue st
 ### Key Features
 
 - ✅ Multiple subscription tiers (Free, Monthly, Yearly, Lifetime)
-- ✅ Platform support (iOS App Store, Google Play, Direct)
+- ✅ Platform support (iOS App Store, Google Play, SamCart, Direct)
 - ✅ Content unlocking (roles, scenarios, voice packs)
 - ✅ Entitlement checking (what can user access?)
 - ✅ Purchase verification
@@ -62,7 +62,7 @@ The monetization system implements a **freemium** model with multiple revenue st
 
 ### Data Flow
 
-1. **Purchase** → Platform (App Store/Play Store) → FFI → Rust → SQLite
+1. **Purchase** → Platform (App Store/Play Store/SamCart) → FFI → Rust → SQLite
 2. **Entitlement Check** → Rust (checks subscription + unlocks) → Returns access decision
 3. **Content Access** → App checks entitlement → Shows/Hides premium content
 
@@ -240,6 +240,32 @@ store.save_subscription(&subscription)?;
 // Verify user now has premium access
 let sub = store.get_user_subscription("user_123")?.unwrap();
 assert!(sub.has_premium_access());
+```
+
+### Example: SamCart Web Purchase
+
+```rust
+// Process SamCart webhook payment
+let mut subscription = Subscription::new_free("user_456".to_string());
+subscription.tier = SubscriptionTier::PremiumYearly;
+subscription.status = SubscriptionStatus::Active;
+subscription.expires_at = Some(Utc::now() + Duration::days(365));
+subscription.platform = Platform::SamCart;
+subscription.transaction_id = Some("samcart_order_789xyz".to_string());
+
+// Record the purchase separately for analytics
+let purchase = Purchase::new(
+    "user_456".to_string(),
+    "premium_yearly_web".to_string(),
+    Platform::SamCart,
+    "samcart_order_789xyz".to_string(),
+    7999, // $79.99
+    "USD".to_string(),
+);
+
+store.save_subscription(&subscription)?;
+store.save_purchase(&purchase)?;
+store.verify_purchase(&purchase.id)?; // Mark as verified after webhook confirmation
 ```
 
 ## Flutter Integration
