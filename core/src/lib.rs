@@ -1,5 +1,6 @@
 #![allow(unexpected_cfgs)]
 
+pub mod monetization;
 mod retention;
 mod roles;
 mod runner;
@@ -12,6 +13,10 @@ pub mod validator;
 pub mod api;
 
 // Re-export key types for internal use
+pub use monetization::{
+    ContentAccess, ContentType, ContentUnlock, Entitlement, EntitlementReason, MonetizationConfig,
+    Platform, Purchase, Subscription, SubscriptionStatus, SubscriptionTier,
+};
 pub use retention::{calculate_priority, next_ping_seconds, MemoryLink};
 pub use roles::{
     liminal_transition, Difficulty, EmotionTag, LiminalTransition, Reflection, ResonanceTrace,
