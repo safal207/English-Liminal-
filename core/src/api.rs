@@ -13,6 +13,7 @@ use crate::roles::{
 use crate::runner::RunnerState;
 use crate::scripts::Script;
 use crate::storage::Store;
+use crate::telemetry::{DeviceContext, EventBatch, TelemetryEvent};
 
 // Global state
 static SCRIPTS: Lazy<Mutex<HashMap<String, Script>>> = Lazy::new(|| Mutex::new(HashMap::new()));
@@ -420,6 +421,110 @@ pub fn get_trace_json(trace_id: String) -> Result<String, String> {
         .ok_or_else(|| format!("Resonance trace not found: {}", trace_id))?;
 
     serde_json::to_string(&trace).map_err(|e| e.to_string())
+}
+
+// ============================================================================
+// v1.2: Telemetry & Analytics
+// ============================================================================
+
+#[frb(sync)]
+pub fn track_event(
+    event_type: String,
+    session_id: Option<String>,
+    user_id: Option<String>,
+    properties_json: String,
+    context_json: String,
+) -> Result<(), String> {
+    let guard = STORE.lock();
+    let store = guard
+        .as_ref()
+        .ok_or_else(|| "Storage not initialized".to_string())?;
+
+    // Parse EventType from string
+    let event_type_parsed: crate::telemetry::EventType =
+        serde_json::from_str(&format!("\"{}\"", event_type)).map_err(|e| e.to_string())?;
+
+    // Parse properties
+    let properties: std::collections::HashMap<String, serde_json::Value> =
+        serde_json::from_str(&properties_json).map_err(|e| e.to_string())?;
+
+    // Parse context
+    let context: DeviceContext = serde_json::from_str(&context_json).map_err(|e| e.to_string())?;
+
+    // Create event
+    let mut event = TelemetryEvent::new(event_type_parsed, context);
+    event.session_id = session_id;
+    event.user_id = user_id;
+    event.properties = properties;
+
+    store.add_telemetry_event(&event).map_err(|e| e.to_string())
+}
+
+#[frb(sync)]
+pub fn get_pending_telemetry_events(limit: u32) -> Result<String, String> {
+    let guard = STORE.lock();
+    let store = guard
+        .as_ref()
+        .ok_or_else(|| "Storage not initialized".to_string())?;
+
+    let events = store
+        .get_pending_events(limit as usize)
+        .map_err(|e| e.to_string())?;
+
+    serde_json::to_string(&events).map_err(|e| e.to_string())
+}
+
+#[frb(sync)]
+pub fn create_telemetry_batch(events_json: String) -> Result<String, String> {
+    let guard = STORE.lock();
+    let store = guard
+        .as_ref()
+        .ok_or_else(|| "Storage not initialized".to_string())?;
+
+    let events: Vec<TelemetryEvent> =
+        serde_json::from_str(&events_json).map_err(|e| e.to_string())?;
+
+    let batch = EventBatch::new(events);
+    store.save_batch(&batch).map_err(|e| e.to_string())?;
+
+    serde_json::to_string(&batch).map_err(|e| e.to_string())
+}
+
+#[frb(sync)]
+pub fn mark_telemetry_batch_sent(batch_id: String) -> Result<(), String> {
+    let guard = STORE.lock();
+    let store = guard
+        .as_ref()
+        .ok_or_else(|| "Storage not initialized".to_string())?;
+
+    store
+        .mark_batch_sent(&batch_id)
+        .map_err(|e| e.to_string())
+}
+
+#[frb(sync)]
+pub fn get_telemetry_stats() -> Result<String, String> {
+    let guard = STORE.lock();
+    let store = guard
+        .as_ref()
+        .ok_or_else(|| "Storage not initialized".to_string())?;
+
+    let stats = store.get_telemetry_stats().map_err(|e| e.to_string())?;
+    serde_json::to_string(&stats).map_err(|e| e.to_string())
+}
+
+#[frb(sync)]
+pub fn cleanup_old_telemetry(days: i64) -> Result<u32, String> {
+    let guard = STORE.lock();
+    let store = guard
+        .as_ref()
+        .ok_or_else(|| "Storage not initialized".to_string())?;
+
+    let deleted = store
+        .cleanup_old_telemetry(days)
+        .map_err(|e| e.to_string())?;
+
+    Ok(deleted as u32)
 }
 
 // ============================================================================
