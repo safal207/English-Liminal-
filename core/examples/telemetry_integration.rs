@@ -2,7 +2,6 @@
 ///
 /// This file demonstrates how to integrate telemetry tracking
 /// into the English-Liminal app at various points.
-
 use liminal_english_core::{
     DeviceContext, EventBatch, EventType, Store, TelemetryConfig, TelemetryEvent,
 };
@@ -110,7 +109,11 @@ pub fn batch_and_send_workflow(store: &Store) -> anyhow::Result<()> {
     let batch = EventBatch::new(pending);
     store.save_batch(&batch)?;
 
-    println!("Created batch {} with {} events", batch.batch_id, batch.events.len());
+    println!(
+        "Created batch {} with {} events",
+        batch.batch_id,
+        batch.events.len()
+    );
 
     // 3. Send to server (pseudocode)
     // match send_to_posthog(&batch).await {
@@ -219,10 +222,13 @@ pub fn full_integration_example() -> anyhow::Result<()> {
 
     // Session ID (generate per app session)
     // In production, use uuid crate: uuid::Uuid::new_v4().to_string()
-    let session_id = format!("session-{}", std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .unwrap()
-        .as_millis());
+    let session_id = format!(
+        "session-{}",
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_millis()
+    );
 
     // User ID (anonymized hash)
     let user_id = "user_hash_123456";

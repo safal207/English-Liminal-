@@ -497,9 +497,7 @@ pub fn mark_telemetry_batch_sent(batch_id: String) -> Result<(), String> {
         .as_ref()
         .ok_or_else(|| "Storage not initialized".to_string())?;
 
-    store
-        .mark_batch_sent(&batch_id)
-        .map_err(|e| e.to_string())
+    store.mark_batch_sent(&batch_id).map_err(|e| e.to_string())
 }
 
 #[frb(sync)]

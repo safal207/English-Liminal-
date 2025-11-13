@@ -97,7 +97,11 @@ impl TelemetryEvent {
     }
 
     /// Add a property to the event
-    pub fn with_property(mut self, key: impl Into<String>, value: impl Into<serde_json::Value>) -> Self {
+    pub fn with_property(
+        mut self,
+        key: impl Into<String>,
+        value: impl Into<serde_json::Value>,
+    ) -> Self {
         self.properties.insert(key.into(), value.into());
         self
     }
@@ -191,7 +195,7 @@ impl Default for TelemetryConfig {
         Self {
             enabled: true,
             batch_size: 50,
-            batch_max_age_seconds: 3600, // 1 hour
+            batch_max_age_seconds: 3600,   // 1 hour
             batch_max_size_bytes: 100_000, // 100KB
             wifi_only: true,
             endpoint: None,
