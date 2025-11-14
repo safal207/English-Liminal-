@@ -26,12 +26,12 @@ export default function ProblemSolution() {
   const solutions = [
     {
       icon: Users,
-      title: 'Real Situations You'll Face Tomorrow',
+      title: 'Real Situations You\'ll Face Tomorrow',
       description: 'Practice the exact scenarios you need: job interviews, code reviews, investor pitches, visa applications. 26 scenarios across 7 professional roles.',
     },
     {
       icon: Mic,
-      title: 'Speak, Don't Memorize',
+      title: 'Speak, Don\'t Memorize',
       description: 'AI-powered speech recognition gives instant feedback on pronunciation and fluency. No awkward tutors. No scheduling. Just you and real conversations.',
     },
     {
@@ -42,7 +42,7 @@ export default function ProblemSolution() {
     {
       icon: Brain,
       title: 'Remember Forever with Spaced Repetition',
-      description: 'Our algorithm knows when you'll forget. Review scenarios at the perfect time to move knowledge into long-term memory.',
+      description: 'Our algorithm knows when you\'ll forget. Review scenarios at the perfect time to move knowledge into long-term memory.',
     },
   ]
 
