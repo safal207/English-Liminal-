@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Clock } from 'lucide-react'
 
@@ -17,11 +17,13 @@ export default function CountdownTimer({
   endDate,
   onExpire
 }: CountdownTimerProps) {
-  // Default: 24 hours from now
-  const defaultEndDate = new Date()
-  defaultEndDate.setHours(defaultEndDate.getHours() + 24)
-
-  const targetDate = endDate || defaultEndDate
+  // Memoize target date to prevent recreation on every render
+  const targetDate = useMemo(() => {
+    if (endDate) return endDate
+    const defaultEndDate = new Date()
+    defaultEndDate.setHours(defaultEndDate.getHours() + 24)
+    return defaultEndDate
+  }, [endDate])
 
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -55,10 +57,12 @@ export default function CountdownTimer({
       }
     }
 
+    // Initial calculation
     setTimeLeft(calculateTimeLeft())
 
     const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft())
+      const newTimeLeft = calculateTimeLeft()
+      setTimeLeft(newTimeLeft)
     }, 1000)
 
     return () => clearInterval(timer)

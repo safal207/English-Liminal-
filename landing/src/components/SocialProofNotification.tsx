@@ -28,30 +28,38 @@ export default function SocialProofNotification() {
   const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
+    const timers: NodeJS.Timeout[] = []
+
+    const showRandomNotification = () => {
+      const randomIndex = Math.floor(Math.random() * notifications.length)
+      setCurrentNotification(notifications[randomIndex])
+      setIsVisible(true)
+
+      // Hide after 5 seconds
+      const hideTimer = setTimeout(() => {
+        setIsVisible(false)
+      }, 5000)
+      timers.push(hideTimer)
+
+      // Show next notification after 20-40 seconds
+      const nextDelay = 20000 + Math.random() * 20000
+      const nextTimer = setTimeout(() => {
+        showRandomNotification()
+      }, nextDelay)
+      timers.push(nextTimer)
+    }
+
     // Show first notification after 5 seconds
-    const initialDelay = setTimeout(() => {
+    const initialTimer = setTimeout(() => {
       showRandomNotification()
     }, 5000)
+    timers.push(initialTimer)
 
-    return () => clearTimeout(initialDelay)
+    return () => {
+      // Clear all timers on unmount
+      timers.forEach(timer => clearTimeout(timer))
+    }
   }, [])
-
-  const showRandomNotification = () => {
-    const randomIndex = Math.floor(Math.random() * notifications.length)
-    setCurrentNotification(notifications[randomIndex])
-    setIsVisible(true)
-
-    // Hide after 5 seconds
-    setTimeout(() => {
-      setIsVisible(false)
-    }, 5000)
-
-    // Show next notification after 20-40 seconds
-    const nextDelay = 20000 + Math.random() * 20000
-    setTimeout(() => {
-      showRandomNotification()
-    }, nextDelay)
-  }
 
   const handleClose = () => {
     setIsVisible(false)
