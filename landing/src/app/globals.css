@@ -8,8 +8,19 @@
     --foreground: 222.2 84% 4.9%;
   }
 
+  html {
+    @apply scroll-smooth;
+  }
+
   body {
     @apply bg-white text-gray-900 antialiased;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Prevent layout shift on scroll */
+  html {
+    overflow-y: scroll;
   }
 }
 

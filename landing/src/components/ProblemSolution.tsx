@@ -1,4 +1,8 @@
+'use client'
+
 import { X, Check, BookOpen, Mic, Users, Brain } from 'lucide-react'
+import { motion } from 'framer-motion'
+import ScrollReveal from './ScrollReveal'
 
 export default function ProblemSolution() {
   const problems = [
@@ -42,50 +46,107 @@ export default function ProblemSolution() {
     },
   ]
 
-  return (
-    <div className="bg-white py-24 sm:py-32">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        {/* Problem Section */}
-        <div className="mx-auto max-w-2xl text-center mb-16">
-          <h2 className="text-base font-semibold leading-7 text-blue-600">The Problem</h2>
-          <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            Why Traditional English Learning Fails
-          </p>
-          <p className="mt-6 text-lg leading-8 text-gray-600">
-            You've tried apps, courses, and tutors. You know the grammar. But when it's time to speak...
-          </p>
-        </div>
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15
+      }
+    }
+  }
 
-        <div className="mx-auto grid max-w-2xl grid-cols-1 gap-8 lg:max-w-none lg:grid-cols-3 mb-24">
-          {problems.map((problem) => (
-            <div key={problem.title} className="bg-red-50 rounded-2xl p-8 border-2 border-red-100">
-              <problem.icon className="h-8 w-8 text-red-600 mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">{problem.title}</h3>
-              <p className="text-gray-600">{problem.description}</p>
-            </div>
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6 }
+    }
+  }
+
+  return (
+    <div className="bg-white py-16 sm:py-24 lg:py-32">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Problem Section */}
+        <ScrollReveal>
+          <div className="mx-auto max-w-2xl text-center mb-12 sm:mb-16">
+            <h2 className="text-base font-semibold leading-7 text-blue-600">The Problem</h2>
+            <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+              Why Traditional English Learning Fails
+            </p>
+            <p className="mt-4 sm:mt-6 text-base sm:text-lg leading-7 sm:leading-8 text-gray-600 px-4 sm:px-0">
+              You've tried apps, courses, and tutors. You know the grammar. But when it's time to speak...
+            </p>
+          </div>
+        </ScrollReveal>
+
+        <motion.div
+          className="mx-auto grid max-w-2xl grid-cols-1 gap-4 sm:gap-6 lg:gap-8 lg:max-w-none lg:grid-cols-3 mb-16 sm:mb-24"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+        >
+          {problems.map((problem, index) => (
+            <motion.div
+              key={problem.title}
+              variants={itemVariants}
+              className="bg-red-50 rounded-xl sm:rounded-2xl p-6 sm:p-8 border-2 border-red-100"
+              whileHover={{ scale: 1.02, borderColor: '#fca5a5', transition: { duration: 0.2 } }}
+            >
+              <motion.div
+                initial={{ rotate: 0 }}
+                whileHover={{ rotate: 180 }}
+                transition={{ duration: 0.3 }}
+              >
+                <problem.icon className="h-7 w-7 sm:h-8 sm:w-8 text-red-600 mb-3 sm:mb-4" />
+              </motion.div>
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">{problem.title}</h3>
+              <p className="text-sm sm:text-base text-gray-600 leading-relaxed">{problem.description}</p>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         {/* Solution Section */}
-        <div className="mx-auto max-w-2xl text-center mb-16">
-          <h2 className="text-base font-semibold leading-7 text-blue-600">The Solution</h2>
-          <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            How English Liminal Works
-          </p>
-          <p className="mt-6 text-lg leading-8 text-gray-600">
-            Stop studying English. Start <em>living</em> it.
-          </p>
-        </div>
+        <ScrollReveal delay={0.2}>
+          <div className="mx-auto max-w-2xl text-center mb-12 sm:mb-16">
+            <h2 className="text-base font-semibold leading-7 text-blue-600">The Solution</h2>
+            <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+              How English Liminal Works
+            </p>
+            <p className="mt-4 sm:mt-6 text-base sm:text-lg leading-7 sm:leading-8 text-gray-600 px-4 sm:px-0">
+              Stop studying English. Start <em>living</em> it.
+            </p>
+          </div>
+        </ScrollReveal>
 
-        <div className="mx-auto grid max-w-2xl grid-cols-1 gap-8 lg:max-w-none lg:grid-cols-2">
-          {solutions.map((solution) => (
-            <div key={solution.title} className="bg-blue-50 rounded-2xl p-8 border-2 border-blue-100">
-              <solution.icon className="h-8 w-8 text-blue-600 mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">{solution.title}</h3>
-              <p className="text-gray-600">{solution.description}</p>
-            </div>
+        <motion.div
+          className="mx-auto grid max-w-2xl grid-cols-1 gap-4 sm:gap-6 lg:gap-8 lg:max-w-none lg:grid-cols-2"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+        >
+          {solutions.map((solution, index) => (
+            <motion.div
+              key={solution.title}
+              variants={itemVariants}
+              className="bg-blue-50 rounded-xl sm:rounded-2xl p-6 sm:p-8 border-2 border-blue-100"
+              whileHover={{ scale: 1.02, borderColor: '#93c5fd', transition: { duration: 0.2 } }}
+            >
+              <motion.div
+                initial={{ scale: 1 }}
+                whileHover={{ scale: 1.1 }}
+                transition={{ duration: 0.2 }}
+              >
+                <solution.icon className="h-7 w-7 sm:h-8 sm:w-8 text-blue-600 mb-3 sm:mb-4" />
+              </motion.div>
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">{solution.title}</h3>
+              <p className="text-sm sm:text-base text-gray-600 leading-relaxed">{solution.description}</p>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </div>
   )
