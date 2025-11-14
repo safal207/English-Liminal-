@@ -173,25 +173,68 @@ export default function Hero() {
               }}
             ></motion.div>
             <motion.div
-              className="relative rounded-xl sm:rounded-2xl bg-gray-900 p-1.5 sm:p-2 shadow-2xl ring-1 ring-gray-900/10"
+              className="relative rounded-xl sm:rounded-2xl bg-gradient-to-br from-gray-900 to-gray-800 p-1.5 sm:p-2 shadow-2xl ring-1 ring-white/10"
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.3 }}
             >
-              <div className="bg-gray-800 rounded-lg sm:rounded-xl p-4 sm:p-8 text-center">
-                <div className="text-gray-400 text-xs sm:text-sm mb-3 sm:mb-4">App Screenshot Placeholder</div>
+              <div className="bg-white rounded-lg sm:rounded-xl p-4 sm:p-8">
+                {/* App header mockup */}
+                <div className="flex items-center justify-between mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-gray-200">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs sm:text-sm">L</div>
+                    <h3 className="text-sm sm:text-lg font-semibold text-gray-900">Choose Your Role</h3>
+                  </div>
+                  <div className="flex gap-1 sm:gap-2">
+                    <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-red-400"></div>
+                    <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-yellow-400"></div>
+                    <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-green-400"></div>
+                  </div>
+                </div>
+
+                {/* Scenario cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-                  {['Scenario 1', 'Scenario 2', 'Scenario 3'].map((name, index) => (
+                  {[
+                    { name: 'Job Interview', icon: '💼', color: 'from-blue-500 to-blue-600', scenarios: '8 scenarios' },
+                    { name: 'Startup Pitch', icon: '🚀', color: 'from-purple-500 to-purple-600', scenarios: '6 scenarios' },
+                    { name: 'Sales Call', icon: '📞', color: 'from-pink-500 to-pink-600', scenarios: '5 scenarios' }
+                  ].map((role, index) => (
                     <motion.div
-                      key={name}
-                      className="bg-gray-700 rounded-lg p-3 sm:p-4 h-24 sm:h-32 flex items-center justify-center text-gray-300 text-xs sm:text-sm"
+                      key={role.name}
+                      className={`bg-gradient-to-br ${role.color} rounded-xl p-4 sm:p-5 text-white shadow-lg`}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, delay: 1.4 + index * 0.1 }}
-                      whileHover={{ scale: 1.05, backgroundColor: '#4B5563' }}
+                      whileHover={{ scale: 1.05, y: -5 }}
                     >
-                      {name}
+                      <div className="text-2xl sm:text-3xl mb-2">{role.icon}</div>
+                      <h4 className="text-sm sm:text-base font-semibold mb-1">{role.name}</h4>
+                      <p className="text-xs text-white/80">{role.scenarios}</p>
+                      <div className="mt-3 w-full h-1.5 bg-white/20 rounded-full overflow-hidden">
+                        <motion.div
+                          className="h-full bg-white/80 rounded-full"
+                          initial={{ width: 0 }}
+                          animate={{ width: `${(index + 1) * 25}%` }}
+                          transition={{ duration: 1, delay: 1.6 + index * 0.1 }}
+                        />
+                      </div>
                     </motion.div>
                   ))}
+                </div>
+
+                {/* Stats bar */}
+                <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-gray-200 flex justify-around text-center">
+                  <div>
+                    <div className="text-lg sm:text-2xl font-bold text-gray-900">26</div>
+                    <div className="text-[10px] sm:text-xs text-gray-500">Scenarios</div>
+                  </div>
+                  <div>
+                    <div className="text-lg sm:text-2xl font-bold text-gray-900">7</div>
+                    <div className="text-[10px] sm:text-xs text-gray-500">Roles</div>
+                  </div>
+                  <div>
+                    <div className="text-lg sm:text-2xl font-bold text-gray-900">AI</div>
+                    <div className="text-[10px] sm:text-xs text-gray-500">Powered</div>
+                  </div>
                 </div>
               </div>
             </motion.div>
