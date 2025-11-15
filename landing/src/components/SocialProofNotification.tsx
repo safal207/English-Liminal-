@@ -69,11 +69,12 @@ export default function SocialProofNotification() {
     <AnimatePresence>
       {isVisible && currentNotification && (
         <motion.div
-          className="fixed bottom-4 left-4 z-50 max-w-xs sm:max-w-sm"
-          initial={{ x: -400, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          exit={{ x: -400, opacity: 0 }}
-          transition={{ type: "spring", stiffness: 100, damping: 20 }}
+          className="fixed bottom-28 sm:bottom-4 left-1/2 sm:left-4 -translate-x-1/2 sm:translate-x-0 z-40"
+          initial={{ y: 60, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 60, opacity: 0 }}
+          transition={{ type: "spring", stiffness: 120, damping: 18 }}
+          style={{ width: 'min(22rem, calc(100vw - 2rem))' }}
         >
           <div className="bg-white rounded-xl shadow-2xl ring-1 ring-black/5 overflow-hidden">
             <div className="relative p-4">

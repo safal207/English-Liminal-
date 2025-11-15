@@ -44,39 +44,42 @@ export default function StickyCTABar() {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
         >
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
               {/* Text */}
-              <div className="flex-1 min-w-0">
-                <p className="text-white font-semibold text-sm sm:text-base truncate">
+              <div className="flex-1 min-w-0 text-center sm:text-left">
+                <p className="text-white font-semibold text-sm sm:text-base">
                   Ready to master real-world English?
                 </p>
-                <p className="text-white/80 text-xs sm:text-sm hidden sm:block">
+                <p className="text-white/80 text-xs sm:text-sm mt-1 sm:mt-0">
                   Start your 7-day free trial today. No credit card required.
                 </p>
               </div>
 
-              {/* CTA Button */}
-              <motion.a
-                href="#pricing"
-                className="flex-shrink-0 inline-flex items-center gap-2 bg-white text-blue-600 font-semibold px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm hover:bg-gray-50 transition-all shadow-lg"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <span className="hidden sm:inline">Get Started Free</span>
-                <span className="sm:hidden">Start Free</span>
-                <ArrowRight className="w-4 h-4" />
-              </motion.a>
+              <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-center sm:justify-end">
+                {/* CTA Button */}
+                <motion.a
+                  href="#pricing"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white text-blue-600 font-semibold px-4 sm:px-6 py-2 sm:py-3 rounded-full text-sm hover:bg-gray-50 transition-all shadow-lg"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <span className="hidden sm:inline">Get Started Free</span>
+                  <span className="sm:hidden">Start Free</span>
+                  <ArrowRight className="w-4 h-4" />
+                </motion.a>
 
-              {/* Close button */}
-              <button
-                onClick={handleDismiss}
-                className="flex-shrink-0 text-white/60 hover:text-white transition-colors ml-2"
-                aria-label="Dismiss"
-              >
-                <X className="w-5 h-5" />
-              </button>
+                {/* Close button */}
+                <button
+                  onClick={handleDismiss}
+                  className="flex-shrink-0 text-white/70 hover:text-white transition-colors"
+                  aria-label="Dismiss"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
             </div>
           </div>
         </motion.div>

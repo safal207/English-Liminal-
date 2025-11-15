@@ -95,11 +95,11 @@ export default function CountdownTimer({
           )}
 
           {/* Timer */}
-          <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 w-full">
             {Object.entries(timeLeft).map(([unit, value]) => (
               <motion.div
                 key={unit}
-                className="flex flex-col items-center bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2 sm:px-4 sm:py-3 min-w-[60px] sm:min-w-[80px]"
+                className="flex flex-col items-center bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2 sm:px-4 sm:py-3 min-w-[58px] sm:min-w-[80px]"
                 whileHover={{ scale: 1.05 }}
               >
                 <AnimatePresence mode="wait">

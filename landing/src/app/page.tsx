@@ -17,7 +17,7 @@ import StickyCTABar from '@/components/StickyCTABar'
 
 export default function Home() {
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen pb-24 sm:pb-0">
       {/* Countdown Timer - Creates urgency (SamCart style) */}
       <CountdownTimer
         title="Limited Time Offer Ends In:"
