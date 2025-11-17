@@ -1,3 +1,14 @@
+// FFI Integration Tests
+//
+// IMPORTANT: These tests MUST be run sequentially (not in parallel) because they use
+// global storage state in the FFI API. Run with:
+//   cargo test --test ffi_integration -- --test-threads=1
+//
+// Or use the Makefile:
+//   make test-integration
+//
+// Running these tests in parallel WILL cause failures due to race conditions.
+
 use liminal_english_core::api::*;
 
 #[test]
